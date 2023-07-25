@@ -54,8 +54,8 @@ const buildAskConfirm=async (request)=>{
     let txt=readTemplate("pending_request.txt")
     txt=replaceInTemplate(txt,JSON.parse(school_json_data))
     txt=replaceInTemplate(txt,JSON.parse(user_json_data))
-    let LINK_ACCEPT=`${global.LAB2GO_BASE_URL.DEV}/api/requests/confirm?tk=${requestToken}&status=accept`
-    let LINK_DISCARD=`${global.LAB2GO_BASE_URL.DEV}/api/requests/confirm?tk=${requestToken}&status=discard`
+    let LINK_ACCEPT=`${global.LAB2GO_BASE_URL.PROD}/api/requests/confirm?tk=${requestToken}&status=accept`
+    let LINK_DISCARD=`${global.LAB2GO_BASE_URL.PROD}/api/requests/confirm?tk=${requestToken}&status=discard`
     
     //rimuove eventuali multipli backslash nell'URL
     LINK_ACCEPT=LINK_ACCEPT.replace(/([^:]\/)\/+/g, "$1")
