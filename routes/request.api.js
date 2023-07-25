@@ -19,7 +19,7 @@ router.get("/confirm",async (req,res)=>{
     
     try{
         let {msg,mailbody}=await actions[status](request)
-        //sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`,msg,global.mail.LAB2GO_MAIL,global.mailext.REQACC)
+        sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`,msg,global.mail.LAB2GO_MAIL,global.mailext.REQACC)
         res.send(msg)
     }
     catch(exc){
@@ -55,7 +55,7 @@ router.post("/create",async (req,res)=>{
         try{
             
             const {buildAskConfirm}=require("../api/confirm")
-            let mailBody=buildAskConfirm(request.toJSON())
+            let mailBody=await buildAskConfirm(request.toJSON())
             await sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,"[lab2go] Richiesta di approvazione",mailBody,global.mail.LAB2GO_MAIL,global.mailext.REQSUB)
 
         }
