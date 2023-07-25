@@ -1,0 +1,23 @@
+<pre>
+
+----------------------------------------------------------------------------------------
+
+Richiesta sottomessa da: [email]
+
+Riepilogo della sottomissione: 
+
+  Codice Meccanografico:  [sc_tab_plesso_code]
+          Nome istituto:  [sc_tab_istituto]
+            Nome plesso:  [sc_tab_plesso]
+         Email istituto:  [sc_tab_email]
+   Nome del richiedente:  [name]
+Cognome del richiedente:  [surname]
+  Email del richiedente:  [email]
+      Email alternativi:  [emailAlt]
+  Preferenza Discipline:  [discipline]
+                   Note:  [notes]
+
+Questa richiesta e' stata inserita il [DATE] alle [TIME] (UTC).
+Si prega di [LINK_ACCEPT], se legittima, o [LINK_DISCARD] se spam. 
+ 
+</pre>

@@ -1,0 +1,8 @@
+<pre>
+Caro docente la registrazione al sito Lab2GO e' stata completata.
+Accedendo al sito con le credenziali fornite in fase di registrazione
+potrà inoltrare una nuova richiesta di partecipazione e visualizzarne lo stato.
+
+Cordiali saluti,
+Il Team Lab2Go 
+</pre>

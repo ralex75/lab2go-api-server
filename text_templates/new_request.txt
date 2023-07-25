@@ -1,0 +1,40 @@
+<pre>
+Caro Docente,
+con la presente la informiamo che abbiamo ricevuto una richiesta di partecipazione a Lab2Go A.S. 2023-2024 da parte
+della scuola [sc_tab_plesso] (Codice Meccanografico:[sc_tab_plesso_code]). 
+
+La richiesta è stata presa in carico. 
+Riceverete notizie in proposito entro il 31/10/2023, 
+sia in caso di accettazione della richiesta (insieme ad ulteriori dettagli per lo svolgimento delle attività), 
+sia nel caso non riuscissimo ad accogliere la vostra richiesta per questo anno scolastico. 
+
+Per qualunque comunicazione vi preghiamo di contattare <a href="mailto:info.lab2go@gmail.com">info.lab2go@gmail.com</a>
+
+Di seguito le informazioni che avete sottomesso:
+
+Riepilogo della sottomissione: 
+
+  Codice Meccanografico:  [sc_tab_plesso_code]
+          Nome istituto:  [sc_tab_istituto]
+            Nome plesso:  [sc_tab_plesso]
+         Email istituto:  [sc_tab_email]
+   Nome del richiedente:  [name]
+Cognome del richiedente:  [surname]
+  Email del richiedente:  [email]
+      Email alternativi:  [emailAlt]
+  Preferenza Discipline:  [discipline]
+                   Note:  [notes]
+
+Fino al 30 settembre 2023 e' possibile visualizzare ed eventualmente modificare la vostra richiesta a questo link: [LINK_REQUEST_STATUS]
+
+Di seguito le credenziali per accedere (per visualizzare ed eventualmente modificare la richiesta):
+username: [email]
+password: [password]
+
+Attenzione: <u>il sito di visualizzazione delle richieste inoltrate sarà visibile a partire dal 1 agosto 2023.</u>
+
+Grazie per aver espresso interesse nel nostro progetto! 
+
+Il Team Lab2Go 
+
+</pre>
