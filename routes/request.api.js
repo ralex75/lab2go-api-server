@@ -19,7 +19,8 @@ router.get("/confirm",async (req,res)=>{
     
     try{
         let {msg,mailbody}=await actions[status](request)
-        sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`,msg,global.mail.LAB2GO_MAIL,global.mailext.REQACC)
+        let ext = status=='accept' ? global.mailext.REQACC : global.mailext.REQREF
+        sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`,msg,global.mail.LAB2GO_MAIL,ext)
         res.send(msg)
     }
     catch(exc){

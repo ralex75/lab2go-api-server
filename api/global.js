@@ -1,7 +1,7 @@
 const LAB2GO_MAIL="info.lab2go@gmail.com"
 const MASTER_MAIL="francesco.safaitehrani@roma1.infn.it"
 const NO_REPLY="noreply@infn.it"
-const mailext={"REQSUB":"reqsub","REQACC":"reqacc"}
+const mailext={"REQSUB":"reqsub","REQACC":"reqacc","REQREF":"reqref"}
 const LAB2GO_BASE_URL="https://lab2go-apps.roma1.infn.it/lab2go"
 
 //BASE URL APP PROD
