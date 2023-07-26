@@ -56,7 +56,7 @@ router.post("/create",async (req,res)=>{
             
             const {buildAskConfirm}=require("../api/confirm")
             let mailBody=await buildAskConfirm(request.toJSON())
-            await sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,"[lab2go] Richiesta di approvazione",mailBody,global.mail.LAB2GO_MAIL,global.mailext.REQSUB)
+            await sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Richiesta di approvazione ID:${request.id}`,mailBody,global.mail.LAB2GO_MAIL,global.mailext.REQSUB)
 
         }
         catch(exc){

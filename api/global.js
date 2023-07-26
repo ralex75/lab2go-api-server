@@ -4,7 +4,10 @@ const NO_REPLY="noreply@infn.it"
 const mailext={"REQSUB":"reqsub","REQACC":"reqacc"}
 
 //BASE URL APP PROD
-const LAB2GO_BASE_URL={"PROD":"https://lab2go-apps.roma1.infn.it/lab2go/richieste/","DEV":"localhost:3000/"}
+const LAB2GO_URL={
+    REQUESTS:{"PROD":"https://lab2go-apps.roma1.infn.it/lab2go/richieste/","DEV":"localhost:3000/"},
+    ADMIN:{"PROD":"https://lab2go-apps.roma1.infn.it/lab2go/admin/","DEV":"localhost:3000/"}
+}
 
 const mail={
     MASTER_MAIL,
@@ -12,4 +15,4 @@ const mail={
     NO_REPLY
 }
 
-module.exports={mail,mailext,LAB2GO_BASE_URL}
+module.exports={mail,mailext,LAB2GO_URL}
