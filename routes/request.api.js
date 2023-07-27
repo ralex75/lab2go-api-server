@@ -78,7 +78,7 @@ router.post("/create",async (req,res)=>{
 router.put("/:rid/update",async (req,res)=>{
     let {usr_data,disci_accepted,status}=req.body
 
-    let curreq=await db.partRequest.findOne({where:{id:req.params.rid}})
+    let curreq=await db.request.findOne({where:{id:req.params.rid}})
     if(!curreq){
         return res.status(404).json("Richiesta non trovata")
     }
@@ -98,7 +98,7 @@ router.post("/list",auth.checkAuth,async (req,res)=>{
 
     if(role!='ADMIN'){
         where={"userEmail":email}
-        let preq=await db.partRequest.findOne({where:where,attributes:['token'],raw:true})
+        let preq=await db.request.findOne({where:where,attributes:['token'],raw:true})
         if(preq?.token)
         {
             where={"token":preq.token}
@@ -106,13 +106,13 @@ router.post("/list",auth.checkAuth,async (req,res)=>{
     }
 
    
-    let requests=await db.partRequest.findAll({where:where})
+    let requests=await db.request.findAll({where:where})
 
     res.json({requests})
 })
 
 router.get("/tk/:tk",async (req,res)=>{
-    let requests=await db.partRequest.findAll({where:{token:req.params.tk}})
+    let requests=await db.request.findAll({where:{token:req.params.tk}})
     res.json({requests})
 })
 
