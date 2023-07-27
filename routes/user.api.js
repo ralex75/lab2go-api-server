@@ -39,16 +39,17 @@ router.put("/account",auth.checkAuth,async (req,res)=>{
 })
 
 router.post("/create",async(req,res)=>{
-    const {createAccount} = require("./auth.js")
-    const {DuplicateUserFound}=require("./exceptions")
+   
+    const {DuplicateUserFound}=require("../api/exceptions")
     let {email,password,name,surname}=req.body
-    const {readTemplate,replaceInTemplate}=require("./utils")
+    const {readTemplate,replaceInTemplate}=require("../api/utils")
     
     try{
-        await createAccount(req.body)
+        await auth.createAccount(req.body)
         let txt=readTemplate("user_signup.txt")
         txt=replaceInTemplate(txt,{"username":email,password,name,surname})
         sendMail("alessandro.ruggieri@roma1.infn.it",email,"Lab2Go - Creazione Account",txt)
+        .catch(err=>console.log(err))
         res.json("User created")
     }
     catch(exc)
