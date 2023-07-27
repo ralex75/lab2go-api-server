@@ -26,7 +26,7 @@ const createAccount=async ({email,password,name,surname})=>{
 
   if(user) throw new DuplicateUserFound("Cannot create, duplicate user found.")
   
-  const hashedPasswd=bcrypt.hashSync(password,10).toString("hex")
+  const hashedPasswd=bcrypt.hashSync(password,10)
   
   try{
      const user=await db.users.create({"name":name,"surname":surname,"email":email,"password":hashedPasswd})

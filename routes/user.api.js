@@ -71,6 +71,7 @@ router.post("/login",async (req,res)=>{
     let user=await db.users.findOne({ where: {email:email},raw: true})
     if(!user) return res.status(401).json("User not found.")
     
+    console.log(user.password)
     if(!bcrypt.compareSync(password,user.password)){
         return res.status(401).json({"exc":"invalid user or password."})
     }
