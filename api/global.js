@@ -7,8 +7,8 @@ const LAB2GO_BASE_URL="https://lab2go-apps.roma1.infn.it/lab2go"
 
 //BASE URL APP PROD
 const LAB2GO_URL={
-    REQUESTS:{"PROD":`${LAB2GO_BASE_URL}/richieste/`,"DEV":"localhost:3000"},
-    ADMIN:{"PROD":`${LAB2GO_BASE_URL}/admin/`,"DEV":"localhost:3000"}
+    REQUESTS:{"PROD":`${LAB2GO_BASE_URL}/richieste/`,"DEV":"http://localhost:3000"},
+    ADMIN:{"PROD":`${LAB2GO_BASE_URL}/admin/`,"DEV":"http://localhost:3000"}
 }
 
 const mail={
