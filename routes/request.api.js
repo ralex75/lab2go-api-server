@@ -46,11 +46,11 @@ router.post("/create",async (req,res)=>{
         
        
         request=await db.request.create({token:token,
-                                                 requestToken:crypto.randomBytes(64).toString('hex'),
-                                                 school_mec_code:school.sc_tab_code,
-                                                 plesso_mec_code:school.sc_tab_plesso_code,
-                                                 school_json_data:JSON.stringify(school),user_json_data:JSON.stringify(user),
-                                                 userEmail:user.email})
+                                         requestToken:crypto.randomBytes(64).toString('hex'),
+                                         school_mec_code:school.sc_tab_code,
+                                         plesso_mec_code:school.sc_tab_plesso_code,
+                                         school_json_data:JSON.stringify(school),user_json_data:JSON.stringify(user),
+                                         userEmail:user.email})
         
        
        

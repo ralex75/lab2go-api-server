@@ -72,6 +72,7 @@ router.post("/login",async (req,res)=>{
     if(!user) return res.status(401).json("User not found.")
     
     console.log(user.password)
+    console.log()
     if(!bcrypt.compareSync(password,user.password)){
         return res.status(401).json({"exc":"invalid user or password."})
     }
