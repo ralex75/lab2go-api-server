@@ -1,5 +1,6 @@
 const {Router}=require("express")
 const db = require("../models/index");
+const {Op,QueryTypes} = require("sequelize")
 const {sendMail} = require("../api/mailer");
 const global=require("../api/global")
 const auth=require("../api/auth")
@@ -76,6 +77,47 @@ router.post("/create",async (req,res)=>{
     
 })
 
+router.put("/finalize",async(req,res)=>{
+    const { Transaction } = require('sequelize');
+    const t = await db.sequelize.transaction({isolationLevel: Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED});
+    let error=""
+    try{
+
+        await db.request.update({status:db.sequelize.literal("status || '_COMMIT'") },{
+            where:{ [Op.or]:[ {'status':"ACCEPTED"},{'status':"REJECTED"}] },
+            transaction: t 
+        })
+        
+        let requests=await db.request.findAll({where:{'status':'ACCEPTED_COMMIT'},transaction:t})
+        
+        if(!requests.length) {throw new Error("Nothing to finalize")}
+        let schools=[]
+        requests.forEach(r => {
+            schools.push({
+                "id":r.id,
+                "year":r.year,
+                "school_mec_code":r.school_mec_code,
+                "plesso_mec_code":r.plesso_mec_code,
+                "user_json_data":r.user_json_data,
+                "school_json_data":r.school_json_data,
+                "disci_accepted":r.disci_accepted,
+                "token":r.token,
+                "userEmail":r.userEmail
+            })
+        });
+
+        await db.school.bulkCreate(requests,{ transaction: t })
+
+        await t.commit();
+        
+    }
+    catch(exc){
+        error=exc.message
+        await t.rollback();
+    }
+
+    res.json({"done":!error,"exc":error})
+})
 
 router.put("/:rid/update",async (req,res)=>{
     let {usr_data,disci_accepted,status}=req.body
@@ -90,10 +132,11 @@ router.put("/:rid/update",async (req,res)=>{
     curreq.status=status
     curreq.save()
 
-    res.json({request:curreq})
+    res.json(curreq)
 })
 
 router.post("/list",auth.checkAuth,async (req,res)=>{
+   
     let {filter}=req.body
     let {email,role}=req.user
     let where={}

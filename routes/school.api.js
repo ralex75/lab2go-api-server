@@ -2,16 +2,25 @@ const {Router}=require("express")
 const db = require("../models/index");
 const { body, check, validationResult } = require('express-validator');
 const {Op,QueryTypes} = require("sequelize")
+const auth=require("../api/auth")
 
 const router=Router()
 
 //school list
-router.get("/", async (req,res)=>{
-    let year=2023
+router.post("/",auth.checkAuth, async (req,res)=>{
     
-
-    const schools = await db.sequelize.query(`select distinct(s.id), s.name, s.section, sy.year from schools AS s,schoolStudentYears AS sy where sy.year=2023 and sy.schoolId=s.id;`,{type: QueryTypes.SELECT});
+    console.log("QUI")
+    let {keyword,year}=req.body
+    let {email,role}=req.user
+    year=year || new Date().getFullYear()
+    let where={"year":year}
     
+    if(role!='ADMIN'){
+        where["userEmail"]=email
+    }
+    
+    //const schools = await db.sequelize.query(`select distinct(s.id), s.name, s.section, sy.year from schools AS s,schoolStudentYears AS sy where sy.year=2023 and sy.schoolId=s.id;`,{type: QueryTypes.SELECT});
+    const schools=await db.school.findAll({where:where})
     
     res.json({schools})
 });
@@ -105,7 +114,7 @@ router.put("/:id",
 });
 
 //add school
-router.post("/",[
+router.post("/add",[
     check('name',"Il nome della scuola è richiesto")
     .not().isEmpty()
     .isLength({ min: 5 })

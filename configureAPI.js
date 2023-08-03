@@ -55,7 +55,7 @@ const configureAPI=(app)=>{
 }
 
 
-db.sequelize.sync({}).then(_=>{
+db.sequelize.sync({alter:true}).then(_=>{
     
     //createRow()
 })

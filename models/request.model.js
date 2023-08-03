@@ -16,7 +16,6 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: "PENDING"
           },
         userEmail:{type:Sequelize.STRING,allowNull:false}
-        
     })
     return PartecipationRequest;
   };
