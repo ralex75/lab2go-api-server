@@ -9,7 +9,7 @@ const router=Router()
 //school list
 router.post("/",auth.checkAuth, async (req,res)=>{
     
-    console.log("QUI")
+    
     let {keyword,year}=req.body
     let {email,role}=req.user
     year=year || new Date().getFullYear()

@@ -94,7 +94,6 @@ router.put("/finalize",async(req,res)=>{
         let schools=[]
         requests.forEach(r => {
             schools.push({
-                "id":r.id,
                 "year":r.year,
                 "school_mec_code":r.school_mec_code,
                 "plesso_mec_code":r.plesso_mec_code,
@@ -106,7 +105,7 @@ router.put("/finalize",async(req,res)=>{
             })
         });
 
-        await db.school.bulkCreate(requests,{ transaction: t })
+        await db.school.bulkCreate(schools,{ transaction: t })
 
         await t.commit();
         
@@ -139,8 +138,8 @@ router.post("/list",auth.checkAuth,async (req,res)=>{
    
     let {filter}=req.body
     let {email,role}=req.user
-    let where={}
-
+    let where={"status":{ [Op.in]:['ACCEPTED','REJECTED','SUBMITTED'] }}
+    
     if(role!='ADMIN'){
         where={"userEmail":email}
         let preq=await db.request.findOne({where:where,attributes:['token'],raw:true})
@@ -150,7 +149,6 @@ router.post("/list",auth.checkAuth,async (req,res)=>{
         }
     }
 
-   
     let requests=await db.request.findAll({where:where})
 
     res.json({requests})
