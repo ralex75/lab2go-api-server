@@ -19,10 +19,15 @@ router.get("/:schoolId",async (req,res)=>{
 })
 
 //add school
-router.post("/",[
+router.post("/store",[
+    
     check('student.name',"Il nome dello studente è richiesto")
     .not().isEmpty(),
     check('student.surname',"Il cognome dello studente è richiesto")
+    .not().isEmpty(),
+    check('student.email',"L'indirizzo email dello studente è richiesto")
+    .not().isEmpty(),
+    check('student.disciplina',"La disciplina dello studente è richiesta")
     .not().isEmpty(),
     check('schoolId',"L'ID della scuola è richiesto")
     .not().isEmpty()
@@ -38,23 +43,23 @@ router.post("/",[
 
     const {student,schoolId}= req.body
     
-    const year=new Date().getUTCFullYear()
     let result={}
-    let {name,surname}=student
+    let {name,surname,email,disciplina}=student
     try{ 
        
-        let student=await db.student.create({name,surname,schoolId})
-        await db.schoolStudentYear.create({
-            schoolId:schoolId,
-            studentId:student.id,
-            year:year
-        })
-        
+        let school=await db.school.findByPk(schoolId,{raw:true})
+
+        if(!school) throw new Error("no school found")
+        let discipline=JSON.parse(school.discipline)
+        if(discipline.indexOf(disciplina)<0) throw new Error("disciplina not found")
+
+        let student=await db.student.create({name,surname,email,disciplina,schoolId})
+       
         result['value']=student
     }
     catch(exc) { 
         console.log(exc)
-        result['exc']= exc.message || exc?.errors[0].message || exc 
+        result['exc']=  `Cannot add student,${exc.message}`
     }
     finally { res.status(result['exc'] ? 500 : 200).json(result) }
   

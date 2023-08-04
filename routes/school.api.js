@@ -64,7 +64,7 @@ router.post("/search", async (req,res)=>{
 })
 
 router.get("/:id", async (req,res)=>{
-    const school= await db.schools.findByPk(req.params.id);
+    const school= await db.school.findByPk(req.params.id);
     res.json({school})
 });
 

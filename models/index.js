@@ -9,8 +9,8 @@ const request = require("./request.model")(sequelize, Sequelize);
 const school  = require("./school.model")(sequelize, Sequelize);
 const student  = require("./student.model")(sequelize, Sequelize);
 
-school.hasMany(student,{foreignKey: 'schoolId'})
-student.belongsTo(school)
+school.hasMany(student)
+student.belongsTo(school,{foreignKey: 'schoolId'})
 
 
 const db = {

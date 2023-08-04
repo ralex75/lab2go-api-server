@@ -4,6 +4,15 @@ module.exports = (sequelize, Sequelize) => {
          name: { type: Sequelize.STRING,allowNull:false },
       surname: { type: Sequelize.STRING,allowNull:false },
         disciplina: { type: Sequelize.STRING,allowNull:false }
-    })
+    },
+    /*{
+    indexes: [
+      {
+          unique: true,
+          fields: ['email', 'schoolId']
+      }
+     
+    ]
+    }*/)
     return Student;
   };
