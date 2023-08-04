@@ -6,14 +6,15 @@ const { where } = require("sequelize");
 
 const router=Router()
 
-router.get("/:schoolId/:year?",async (req,res)=>{
-    let {schoolId,year}=req.params
+router.get("/:schoolId",async (req,res)=>{
+    let {schoolId}=req.params
+    //let partecipationYears=await db.school.findAll({attributes:['year','id'],where:{"plesso_mec_code":plesso_code},raw:true})
     
-    let _where={schoolId}
-    //if(year) _where["year"]=year
+    //let schoolId=partecipationYears[year]
 
     //let students=await db.students.findAll({include:{model:db.schoolStudentYear, attributes:[],where:_where}})
-    let students=await db.students.findAll({include:{model:db.schoolStudentYear, attributes:['year'],where:_where}})
+    let students=schoolId ? await db.student.findAll({where:{"schoolId":schoolId}}) : []
+
     res.json({students})
 })
 
@@ -42,7 +43,7 @@ router.post("/",[
     let {name,surname}=student
     try{ 
        
-        let student=await db.students.create({name,surname,schoolId})
+        let student=await db.student.create({name,surname,schoolId})
         await db.schoolStudentYear.create({
             schoolId:schoolId,
             studentId:student.id,
@@ -62,7 +63,7 @@ router.post("/",[
 //delete school
 router.delete("/:id", async (req,res)=>{
     const {id}= req.params
-    const count = await db.students.destroy({ where: { id: id } });
+    const count = await db.student.destroy({ where: { id: id } });
     res.json(count)
 })
 

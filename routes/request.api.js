@@ -99,7 +99,7 @@ router.put("/finalize",async(req,res)=>{
                 "plesso_mec_code":r.plesso_mec_code,
                 "user_json_data":r.user_json_data,
                 "school_json_data":r.school_json_data,
-                "disci_accepted":r.disci_accepted,
+                "discipline":r.disci_accepted,
                 "token":r.token,
                 "userEmail":r.userEmail
             })

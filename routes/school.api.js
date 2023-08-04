@@ -25,6 +25,13 @@ router.post("/",auth.checkAuth, async (req,res)=>{
     res.json({schools})
 });
 
+//anni di partecipazione di una scuola
+router.get("/:schoolId/years",async(req,res)=>{
+    let {plesso_mec_code}=await db.school.findOne({where:{id:req.params.schoolId},attributes:['plesso_mec_code'],raw:true})
+    let years=await db.school.findAll({attributes:['year','id'],where:{"plesso_mec_code":plesso_mec_code},raw:true})
+    res.json({years}) 
+})
+
 router.post("/search", async (req,res)=>{
     let {keyword,year}=req.body
     let query={}

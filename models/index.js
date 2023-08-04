@@ -7,7 +7,10 @@ const sequelize = new Sequelize(dbConfig);
 const user    = require("./user.model")(sequelize, Sequelize);
 const request = require("./request.model")(sequelize, Sequelize);
 const school  = require("./school.model")(sequelize, Sequelize);
+const student  = require("./student.model")(sequelize, Sequelize);
 
+school.hasMany(student,{foreignKey: 'schoolId'})
+student.belongsTo(school)
 
 
 const db = {
@@ -15,7 +18,8 @@ const db = {
     sequelize,
     request,
     users:user,
-    school
+    school,
+    student
 }
 
 
