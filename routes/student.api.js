@@ -75,47 +75,53 @@ router.delete("/:id", async (req,res)=>{
 router.post('/upload',async (req,res)=>{
 
     const fs=require("fs")
-    const {schoolId}=req.body
+    const {disciplina,schoolId}=req.body
     
     
-    if(!req.files || !schoolId){
+    if(!req.files || !schoolId || !disciplina){
         return res.status(500).json({
             status: false,
-            msg: 'No file uploaded'
+            msg: 'Cannot upload file, missing parameters'
         });
     }
 
     const file=req.files.file
    
+    let currentStudents=await db.student.findAll({where:{"schoolId":schoolId},raw:true})
 
+    
+
+    const t = await db.sequelize.transaction() 
+    
     try{
         await file.mv('./uploads/'+file.name)
         let data=fs.readFileSync(`./uploads/${file.name}`,{"encoding":'utf8'})
         let newUsers=[]
-        let year=new Date().getUTCFullYear()
-        await db.students.destroy({where:{year:year,schoolId:schoolId}})
-
         for(let d of data.split("\n"))
         {
             let student=d.split(',')
-            if(student.length!=2) {throw new Error("Invalid File Entry")}
+            if(student.length!=3) {throw new Error("Invalid File Entry")}
             newUsers.push({
                 name:student[0],
                 surname:student[1],
-                year:year,
+                email:student[2],
+                disciplina:disciplina,
                 schoolId:schoolId
             })
         }
 
-        if(newUsers.length==0){throw new Error("Invalid Uplodade File")}
+        if(newUsers.length==0){throw new Error("Invalid uploaded File")}
         
-        
-        await db.students.bulkCreate(newUsers)
+        await db.student.destroy({where:{'email':currentStudents.map(s=>s.email)}},t)
 
+        await db.student.bulkCreate(newUsers,t)
+
+        t.commit()
     }
     catch(exc)
     {
-        
+        t.rollback()
+
         return res.status(500).json({
             status: false,
             msg: exc.message,

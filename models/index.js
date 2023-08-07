@@ -12,7 +12,6 @@ const student  = require("./student.model")(sequelize, Sequelize);
 school.hasMany(student)
 student.belongsTo(school,{foreignKey: 'schoolId'})
 
-
 const db = {
     Sequelize,
     sequelize,
