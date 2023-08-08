@@ -8,13 +8,7 @@ const router=Router()
 
 router.get("/:schoolId",async (req,res)=>{
     let {schoolId}=req.params
-    //let partecipationYears=await db.school.findAll({attributes:['year','id'],where:{"plesso_mec_code":plesso_code},raw:true})
-    
-    //let schoolId=partecipationYears[year]
-
-    //let students=await db.students.findAll({include:{model:db.schoolStudentYear, attributes:[],where:_where}})
     let students=schoolId ? await db.student.findAll({where:{"schoolId":schoolId}}) : []
-
     res.json({students})
 })
 
