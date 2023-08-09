@@ -153,7 +153,7 @@ router.post("/list",auth.checkAuth,async (req,res)=>{
    
     let {filter}=req.body
     let {email,role}=req.user
-    let where={"status":{ [Op.in]:['ACCEPTED','REJECTED','SUBMITTED'] }}
+    let where={"status":{ [Op.in]:['ACCEPTED','REJECTED','SUBMITTED','PENDING'] }}
     
     if(role!='ADMIN'){
         where={"userEmail":email}
