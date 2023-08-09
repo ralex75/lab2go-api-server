@@ -26,15 +26,21 @@ const accept=async (request)=>{
 
 
     user["password"]=request.plesso_mec_code
-    user["LINK_REQUEST_STATUS"]=global.LAB2GO_URL.ADMIN.PROD
+    user["LINK_REQUEST_STATUS"]=global.LAB2GO_URL.ADMIN[process.env.NODE_ENV]
 
     let mergedUserData={...user,...JSON.parse(request.user_json_data)}
 
     let txt=readTemplate("new_request.txt")
     txt=replaceInTemplate(txt,JSON.parse(request.school_json_data))
     txt=replaceInTemplate(txt,mergedUserData)
+   
+    if(process.env.NODE_ENV=='PROD'){
+        sendMail(global.mail.NO_REPLY,[user.email,user.emailAlt],"Nuova richiesta di partecipazione",txt,global.mail.LAB2GO_MAIL)
+    }
+    else{
+        sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,"Nuova richiesta di partecipazione",txt,global.mail.DEV_MAIL)
+    }
     
-    sendMail(global.mail.NO_REPLY,[user.email,user.emailAlt],"Nuova richiesta di partecipazione",txt,global.mail.LAB2GO_MAIL)
 
     request.status='SUBMITTED'
     request.save()
@@ -54,8 +60,8 @@ const buildAskConfirm=async (request)=>{
     let txt=readTemplate("pending_request.txt")
     txt=replaceInTemplate(txt,JSON.parse(school_json_data))
     txt=replaceInTemplate(txt,JSON.parse(user_json_data))
-    let LINK_ACCEPT=`${global.LAB2GO_URL.REQUESTS.DEV}/api/requests/confirm?tk=${requestToken}&status=accept`
-    let LINK_DISCARD=`${global.LAB2GO_URL.REQUESTS.DEV}/api/requests/confirm?tk=${requestToken}&status=discard`
+    let LINK_ACCEPT=`${global.LAB2GO_URL.REQUESTS[process.env.NODE_ENV]}/api/requests/confirm?tk=${requestToken}&status=accept`
+    let LINK_DISCARD=`${global.LAB2GO_URL.REQUESTS[process.env.NODE_ENV]}/api/requests/confirm?tk=${requestToken}&status=discard`
     
     //rimuove eventuali multipli backslash nell'URL
     LINK_ACCEPT=LINK_ACCEPT.replace(/([^:]\/)\/+/g, "$1")

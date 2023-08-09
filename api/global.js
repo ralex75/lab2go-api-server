@@ -12,10 +12,12 @@ const LAB2GO_URL={
 }
 
 const mail={
+  
     MASTER_MAIL,
     LAB2GO_MAIL,
     DEV_MAIL,
     NO_REPLY
 }
+
 
 module.exports={mail,mailext,LAB2GO_URL}
