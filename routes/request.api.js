@@ -8,7 +8,6 @@ const auth=require("../api/auth")
 const router=Router()
 
 
-
 router.get("/confirm",async (req,res)=>{
     let {tk,status}=req.query
     if(!tk || !status) return res.sendStatus(403)

@@ -45,8 +45,6 @@ const accept=async (request)=>{
     request.status='SUBMITTED'
     request.save()
 
-    //return "Grazie, la richiesta è stata APPROVATA!"
-
     return {"msg":"Grazie, la richiesta è stata APPROVATA!","mailbody":txt}
 
 }
@@ -60,6 +58,8 @@ const buildAskConfirm=async (request)=>{
     let txt=readTemplate("pending_request.txt")
     txt=replaceInTemplate(txt,JSON.parse(school_json_data))
     txt=replaceInTemplate(txt,JSON.parse(user_json_data))
+
+    //in base alla variabile di ambiente utilizza l'url corretto
     let LINK_ACCEPT=`${global.LAB2GO_URL.REQUESTS[process.env.NODE_ENV]}/api/requests/confirm?tk=${requestToken}&status=accept`
     let LINK_DISCARD=`${global.LAB2GO_URL.REQUESTS[process.env.NODE_ENV]}/api/requests/confirm?tk=${requestToken}&status=discard`
     
