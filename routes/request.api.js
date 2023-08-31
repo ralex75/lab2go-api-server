@@ -17,17 +17,22 @@ router.get("/confirm",async (req,res)=>{
     let request=await db.request.findOne({where:{requestToken:tk}})
     if(!request || request.status!='PENDING') return res.sendStatus(403)
     
+    
+
     try{
         let {msg,mailbody}=await actions[status](request)
         let ext = status=='accept' ? global.mailext.REQACC : global.mailext.REQREF
-        
-        if(process.env.NODE_ENV=="PROD")
+      
+        let environment = process.env.NODE_ENV
+
+        if(environment=='PROD')
         {
             sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`,msg,global.mail.LAB2GO_MAIL,ext)
         }
         else{
             sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,`[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`,msg,global.mail.LAB2GO_MAIL)
         }
+        
         
         //in base all'ambiente di sviluppo genera gli indirizzi
         sendMail(maddr.from, maddr.to, `[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`, msg, maddr.replyTo, ext)
@@ -68,13 +73,16 @@ router.post("/create",async (req,res)=>{
             const {buildAskConfirm}=require("../api/confirm")
             let mailBody=await buildAskConfirm(request.toJSON())
             
-            if(process.env.NODE_ENV=="PROD")
+            let environment = process.env.NODE_ENV
+
+            if(environment=='PROD')
             {
-                await sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Richiesta di approvazione ID:${request.id}`,mailBody,global.mail.LAB2GO_MAIL,global.mailext.REQSUB)
+                sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Richiesta di approvazione ID:${request.id}`,mailBody,global.mail.LAB2GO_MAIL,global.mailext.REQSUB)
             }
             else{
-                await sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,`[lab2go] Richiesta di approvazione ID:${request.id}`,mailBody,global.mail.DEV_MAIL,global.mailext.REQSUB)
+                sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,`[lab2go] Richiesta di approvazione ID:${request.id}`,mailBody,global.mail.DEV_MAIL,global.mailext.REQSUB)
             }
+
             
 
         }
