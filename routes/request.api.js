@@ -100,7 +100,7 @@ router.post("/create",async (req,res)=>{
     
 })
 
-router.put("/finalize",async(req,res)=>{
+router.put("/commit",async(req,res)=>{
     const { Transaction } = require('sequelize');
     const t = await db.sequelize.transaction({isolationLevel: Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED});
     let error=""
