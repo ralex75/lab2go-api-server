@@ -50,6 +50,12 @@ const configureAPI=(app)=>{
     app.use('/api/students',require("./routes/student.api"))
     app.use('/api/user',require("./routes/user.api"))
     
+    //DB BACKUP
+    app.use('/api/backup',(req,res)=>{
+      const path=require('path')
+      res.download(path.resolve('./db/lab2go.db'))
+    })
+    
     app.use(history());
 
 }

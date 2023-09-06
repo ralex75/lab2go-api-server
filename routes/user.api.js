@@ -41,7 +41,7 @@ router.put("/account",auth.checkAuth,async (req,res)=>{
 router.post("/create",async(req,res)=>{
    
     const {DuplicateUserFound}=require("../api/exceptions")
-    let {email,password,name,surname}=req.body
+    let {email,password,name,surname,role}=req.body
     const {readTemplate,replaceInTemplate}=require("../api/utils")
     
     try{
