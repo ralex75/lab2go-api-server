@@ -83,7 +83,7 @@ router.post("/login",async (req,res)=>{
     res.cookie('access_token',token, {httpOnly:true}).status(200).json({"message":"Logged in succesfully",user})
 })
 
-router.post("/logout",auth.checkAuth,(req,res)=>{
+router.post("/logout",(req,res)=>{
     return res
     .clearCookie("access_token")
     .status(200)

@@ -4,6 +4,7 @@ const db = require("./models/index.js");
 const fileUpload = require('express-fileupload');
 const cookieParser = require("cookie-parser");
 const history=require("express-history-api-fallback-middleware")
+const auth=require("./api/auth")
 
 
 
@@ -51,9 +52,14 @@ const configureAPI=(app)=>{
     app.use('/api/user',require("./routes/user.api"))
     
     //DB BACKUP
-    app.use('/api/backup',(req,res)=>{
+    app.use('/api/dbbackup',auth.checkAuth,(req,res)=>{
+      
+      const {user}=req
+      
+      if(!user || user.role.toUpperCase()!='ADMIN') return res.sendStatus(403)
       const path=require('path')
       res.download(path.resolve('./db/lab2go.db'))
+
     })
     
     app.use(history());
