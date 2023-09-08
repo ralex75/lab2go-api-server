@@ -16,6 +16,7 @@ const whitelist = [
                     {"origin":`http://webapp2.roma1.infn.it:9292`,'credentials':true},
                     {"origin":`https://lab2gocc3m.roma1.infn.it`,'credentials':true}
                 ]
+
 let corsOptions = {
   origin: function (origin, callback) {
     console.log("Origin:",origin)
@@ -50,7 +51,8 @@ const configureAPI=(app)=>{
     app.use('/api/requests',require("./routes/request.api"))
     app.use('/api/students',require("./routes/student.api"))
     app.use('/api/user',require("./routes/user.api"))
-    
+    app.use('/api/utils',require("./routes/utils.api"))
+
     //DB BACKUP
     app.use('/api/dbbackup',auth.checkAuth,(req,res)=>{
       

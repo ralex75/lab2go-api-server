@@ -1,1 +1,1 @@
-PUT http://localhost:3000/api/requests/finalize
+GET http://localhost:3000/api/utils/students?scid=1&disc=ciccio
