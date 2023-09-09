@@ -51,18 +51,7 @@ const configureAPI=(app)=>{
     app.use('/api/requests',require("./routes/request.api"))
     app.use('/api/students',require("./routes/student.api"))
     app.use('/api/user',require("./routes/user.api"))
-    app.use('/api/utils',require("./routes/utils.api"))
-
-    //DB BACKUP
-    app.use('/api/dbbackup',auth.checkAuth,(req,res)=>{
-      
-      const {user}=req
-      
-      if(!user || user.role.toUpperCase()!='ADMIN') return res.sendStatus(403)
-      const path=require('path')
-      res.download(path.resolve('./db/lab2go.db'))
-
-    })
+    app.use('/api/dump',require("./routes/dump.api.js"))
     
     app.use(history());
 

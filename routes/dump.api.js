@@ -5,9 +5,18 @@ const auth=require("../api/auth")
 
 const router=Router()
 
-router.get("/students", async(req,res)=>{
+router.get('/db', auth.checkAuth, (req,res)=>{
       
+    const {user}=req
     
+    if(!user || user.role.toUpperCase()!='ADMIN') return res.sendStatus(403)
+    const path=require('path')
+    res.download(path.resolve('./db/lab2go.db'))
+
+})
+
+router.get("/students", async(req,res)=>{
+     
     //const {user,schoolId,disciplina}=req
     const {scid,disc}=req.query
     
@@ -16,7 +25,6 @@ router.get("/students", async(req,res)=>{
     let school=await db.school.findByPk(scid)
     let students=await db.student.findAll({where:{"schoolId":scid},raw:true})
 
-    let data=[]
 
     const FILE_NAME='output.csv'
 
@@ -45,9 +53,9 @@ router.get("/students", async(req,res)=>{
         fs.appendFileSync(FILE_NAME, line);
     });
 
+    const path=require('path')
+    res.download(FILE_NAME)
 
-    res.json(data)
-    //res.download(path.resolve('./db/lab2go.db'))
 
 })
 
