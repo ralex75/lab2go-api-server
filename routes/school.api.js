@@ -20,8 +20,8 @@ router.post("/",auth.checkAuth, async (req,res)=>{
     }
     
     //const schools = await db.sequelize.query(`select distinct(s.id), s.name, s.section, sy.year from schools AS s,schoolStudentYears AS sy where sy.year=2023 and sy.schoolId=s.id;`,{type: QueryTypes.SELECT});
-    const schools=await db.school.findAll({where:where})
-    
+    const schools=await db.school.findAll({where:where,include: db.student})
+   
     res.json({schools})
 });
 
@@ -32,6 +32,12 @@ router.get("/:schoolId/years",async(req,res)=>{
         ["year", "DESC"],
       ], attributes:['year','id'],where:{"plesso_mec_code":plesso_mec_code},raw:true})
     res.json({years}) 
+})
+
+router.get("/:schoolId/students",async (req,res)=>{
+    let {schoolId}=req.params
+    let students=schoolId ? await db.student.findAll({where:{"schoolId":schoolId}}) : []
+    res.json({students})
 })
 
 router.post("/search", async (req,res)=>{

@@ -6,11 +6,7 @@ const { where } = require("sequelize");
 
 const router=Router()
 
-router.get("/:schoolId",async (req,res)=>{
-    let {schoolId}=req.params
-    let students=schoolId ? await db.student.findAll({where:{"schoolId":schoolId}}) : []
-    res.json({students})
-})
+
 
 //add school
 router.post("/store",[

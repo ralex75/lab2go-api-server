@@ -15,17 +15,21 @@ router.get('/db', auth.checkAuth, (req,res)=>{
 
 })
 
-router.get("/students", async(req,res)=>{
+router.get("/students",auth.checkAuth, async(req,res)=>{
      
-    //const {user,schoolId,disciplina}=req
+    const {user}=req
+    
+    //controllo permessi
+    if(!user || user.role.toUpperCase()!='ADMIN') return res.sendStatus(403)
+
     const {scid,disc}=req.query
     
-    //if(!user || user.role.toUpperCase()!='ADMIN') return res.sendStatus(403)
-    //const path=require('path')
-    let school=await db.school.findByPk(scid)
-    let students=await db.student.findAll({where:{"schoolId":scid},raw:true})
+    let conf = {include:db.student}
+    
+    if(scid>0) conf["where"] =  {"id":scid}
 
-
+    let schools=await db.school.findAll(conf)
+   
     const FILE_NAME='studenti.csv'
 
     let disciplina_wiki_map={
@@ -41,17 +45,18 @@ router.get("/students", async(req,res)=>{
     const fs = require('fs');
 
     fs.truncateSync(FILE_NAME,0)
-
-    students.forEach(student => {
-        let stud={}
-        stud["account.wiki"]=`${student.name.split(' ').join("").toLowerCase()}.${student.surname.split(' ').join("").toLowerCase()}`
-        stud["nome_completo"]=`${student.name} ${student.surname}`
-        stud["email"]=`${student.email}`
-        stud["privilegi"]=`user,${disciplina_wiki_map[student.disciplina.toLowerCase()]},${school.school_mec_code}`
-        //data.push(stud)
-        let line=`${stud["account.wiki"]},"${stud["nome_completo"]}","${stud["email"]}","${stud["privilegi"]}"\n`
-        fs.appendFileSync(FILE_NAME, line);
-    });
+    schools.forEach(s=>{
+        s.students.forEach(student => {
+            let stud={}
+            stud["account.wiki"]=`${student.name.split(' ').join("").toLowerCase()}.${student.surname.split(' ').join("").toLowerCase()}`
+            stud["nome_completo"]=`${student.name} ${student.surname}`
+            stud["email"]=`${student.email}`
+            stud["privilegi"]=`user,${disciplina_wiki_map[student.disciplina.toLowerCase()]},${s.school_mec_code}`
+            //data.push(stud)
+            let line=`${stud["account.wiki"]},"${stud["nome_completo"]}","${stud["email"]}","${stud["privilegi"]}"\n`
+            fs.appendFileSync(FILE_NAME, line);
+        });
+    })
 
     const path=require('path')
     res.download(FILE_NAME)
