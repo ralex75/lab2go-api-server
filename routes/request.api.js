@@ -106,12 +106,9 @@ router.put("/commit",async(req,res)=>{
     let error=""
     try{
 
-        await db.request.update({status:db.sequelize.literal("status || '_COMMIT'") },{
-            where:{ [Op.or]:[ {'status':"ACCEPTED"},{'status':"REJECTED"}] },
-            transaction: t 
-        })
+       
         
-        let requests=await db.request.findAll({where:{'status':'ACCEPTED_COMMIT'},transaction:t})
+        let requests=await db.request.findAll({where:{'status':'ACCEPTED'},transaction:t})
         
         if(!requests.length) {throw new Error("Nothing to finalize")}
         let schools=[]
@@ -130,10 +127,16 @@ router.put("/commit",async(req,res)=>{
 
         await db.school.bulkCreate(schools,{ transaction: t })
 
+        await db.request.update({status:db.sequelize.literal("status || '_COMMIT'") },{
+            where:{ [Op.or]:[ {'status':"ACCEPTED"},{'status':"REJECTED"}] },
+            transaction: t 
+        })
+
         await t.commit();
         
     }
     catch(exc){
+        console.log(exc)
         error=exc.message
         await t.rollback();
     }
