@@ -26,7 +26,7 @@ router.get("/students", async(req,res)=>{
     let students=await db.student.findAll({where:{"schoolId":scid},raw:true})
 
 
-    const FILE_NAME='output.csv'
+    const FILE_NAME='studenti.csv'
 
     let disciplina_wiki_map={
         "fisica":"fisica",
