@@ -103,7 +103,7 @@ router.get("/mcode/:code",async(req,res)=>{
 
 router.put("/:id",
 
-    [
+    /*[
         check('name')
         .not().isEmpty()
         .withMessage("Il nome della scuola è richiesto")
@@ -114,18 +114,24 @@ router.put("/:id",
         .isLength({ min: 5 })
         .withMessage("L'indirizzo della scuola deve essere di almeno 5 caratteri"),
      
-    ]
-    , async (req,res)=>{
+    ]*/
+     async (req,res)=>{
    
-    const errors = validationResult(req);
+    /*const errors = validationResult(req);
     console.log(errors)
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }
+    }*/
 
-    const school=req.body
-    const updateRows=await db.schools.update({name:school.name,address:school.address,section:school.section},{where:{id:req.params.id}})
-    res.json(updateRows)
+    const {tutors,...school}=req.body.school
+
+    let sc=await db.school.findByPk(req.params.id)
+   
+    
+    sc.school_json_data=JSON.stringify(school)
+    sc.tutors=tutors
+    sc.save()
+    res.json("done")
 });
 
 //add school

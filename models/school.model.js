@@ -9,7 +9,8 @@ module.exports = (sequelize, Sequelize) => {
           user_json_data: { type: Sequelize.STRING,allowNull:false },
           discipline:{type:Sequelize.STRING},
           token:{type: Sequelize.STRING,allowNull:false },
-          userEmail:{type:Sequelize.STRING,allowNull:false}
+          userEmail:{type:Sequelize.STRING,allowNull:false},
+          tutors:{type:Sequelize.STRING,allowNull:true}
       },
       {
       indexes: [

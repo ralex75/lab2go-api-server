@@ -106,7 +106,6 @@ router.put("/commit",async(req,res)=>{
     let error=""
     try{
 
-       
         
         let requests=await db.request.findAll({where:{'status':'ACCEPTED'},transaction:t})
         
@@ -121,7 +120,8 @@ router.put("/commit",async(req,res)=>{
                 "school_json_data":r.school_json_data,
                 "discipline":r.disci_accepted,
                 "token":r.token,
-                "userEmail":r.userEmail
+                "userEmail":r.userEmail,
+                "tutors":""
             })
         });
 

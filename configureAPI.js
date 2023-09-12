@@ -4,7 +4,7 @@ const db = require("./models/index.js");
 const fileUpload = require('express-fileupload');
 const cookieParser = require("cookie-parser");
 const history=require("express-history-api-fallback-middleware")
-const auth=require("./api/auth")
+
 
 
 
@@ -58,13 +58,7 @@ const configureAPI=(app)=>{
 }
 
 
-db.sequelize.sync({}).then(_=>{
-    
-    //createRow()
-})
-
-
-
+db.sequelize.sync({})
 
 
 module.exports={configureAPI}

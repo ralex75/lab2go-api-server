@@ -3,7 +3,8 @@ module.exports = (sequelize, Sequelize) => {
         email: { type: Sequelize.STRING },
          name: { type: Sequelize.STRING,allowNull:false },
       surname: { type: Sequelize.STRING,allowNull:false },
-   disciplina: { type: Sequelize.STRING,allowNull:false }
+   disciplina: { type: Sequelize.STRING,allowNull:false },
+       attivo: { type: Sequelize.TINYINT,defaultValue:1}
     },
     {
     indexes: [
