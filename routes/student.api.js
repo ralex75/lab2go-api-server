@@ -55,11 +55,14 @@ router.post("/store",[
   
 })
 
-//delete school
+//delete studente 
+//non viene eliminato dal DB ma il suo stato diventa NON attivo
 router.delete("/:id", async (req,res)=>{
     const {id}= req.params
-    const count = await db.student.destroy({ where: { id: id } });
-    res.json(count)
+    const student = await db.student.findByPk(id);
+    student.attivo=0
+    student.save()
+    res.json({"student":student})
 })
 
 router.post('/upload',async (req,res)=>{

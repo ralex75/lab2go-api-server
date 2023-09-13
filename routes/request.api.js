@@ -166,7 +166,7 @@ router.post("/list",auth.checkAuth,async (req,res)=>{
     let {email,role}=req.user
     let where={"status":{ [Op.in]:['ACCEPTED','REJECTED','SUBMITTED','PENDING'] }}
     
-    if(role!='ADMIN'){
+    if(role!='ADMIN' && role!='COORDINATORE'){
         where={"userEmail":email}
         let preq=await db.request.findOne({where:where,attributes:['token'],raw:true})
         if(preq?.token)

@@ -14,12 +14,11 @@ router.post("/",auth.checkAuth, async (req,res)=>{
     let {email,role}=req.user
     year=year || new Date().getFullYear()
     let where={"year":year}
-    
-    if(role!='ADMIN'){
+   
+    if(role!='ADMIN' && role!='COORDINATORE'){
         where["userEmail"]=email
     }
     
-    //const schools = await db.sequelize.query(`select distinct(s.id), s.name, s.section, sy.year from schools AS s,schoolStudentYears AS sy where sy.year=2023 and sy.schoolId=s.id;`,{type: QueryTypes.SELECT});
     const schools=await db.school.findAll({where:where,include: db.student})
    
     res.json({schools})
@@ -34,9 +33,10 @@ router.get("/:schoolId/years",async(req,res)=>{
     res.json({years}) 
 })
 
+//studenti della scuola
 router.get("/:schoolId/students",async (req,res)=>{
     let {schoolId}=req.params
-    let students=schoolId ? await db.student.findAll({where:{"schoolId":schoolId}}) : []
+    let students=schoolId ? await db.student.findAll({where:{"schoolId":schoolId,"attivo":1}}) : []
     res.json({students})
 })
 
