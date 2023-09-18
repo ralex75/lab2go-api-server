@@ -20,7 +20,7 @@ const allowRequestSchoolUntilAt=async (req,res,next)=>{
     }
   
     next()
-  }
+}
 
  module.exports={
             allowRequestSchoolUntilAt,

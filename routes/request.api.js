@@ -155,8 +155,8 @@ router.put("/:rid/update",async (req,res)=>{
         return res.status(404).json("Richiesta non trovata")
     }
     
-    curreq.user_json_data=JSON.stringify(usr_data)
-    curreq.disci_accepted= JSON.stringify(disci_accepted)
+    curreq.user_json_data = JSON.stringify(usr_data)
+    curreq.disci_accepted = JSON.stringify(disci_accepted)
     curreq.status=status
     curreq.save()
 
