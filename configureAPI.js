@@ -52,13 +52,15 @@ const configureAPI=(app)=>{
     app.use('/api/students',require("./routes/student.api"))
     app.use('/api/user',require("./routes/user.api"))
     app.use('/api/dump',require("./routes/dump.api.js"))
-    
+    app.use((err,req,res,next)=>{
+      res.status(500).send(err)
+    })
     app.use(history());
 
 }
 
 
-db.sequelize.sync({})
+db.sequelize.sync({alter:true})
 
 
 module.exports={configureAPI}

@@ -4,6 +4,7 @@ const {Op,QueryTypes} = require("sequelize")
 const {sendMail} = require("../api/mailer");
 const global=require("../api/global")
 const auth=require("../api/auth")
+const settings=require("../api/settings")
 
 const router=Router()
 
@@ -44,20 +45,24 @@ router.get("/confirm",async (req,res)=>{
     }
 })
 
-router.post("/create",async (req,res)=>{
+//@creazione di una nuova richiesta
+//auth.allowRequestSchoolUntilAt => middleware per il controllo se il limite di tempo per la richiesta è stato raggiunto
+router.post("/create", settings.allowRequestSchoolUntilAt, async (req,res)=>{
     const crypto = require("crypto")
-    
-    
+        
     let {school,user}=req.body
    
     //recupera il token in base al codice meccanografico dell'istituto e dell'anno corrente
     let request= await db.request.findOne({attributes:['token'],raw:true, where: { school_mec_code: school.sc_tab_code,year:new Date().getFullYear()} });
     
-    //se non c'è ne genera uno
-    let token = request?.token || crypto.randomBytes(64).toString('hex')
 
     try{
         
+       
+    
+        //se non c'è ne genera uno
+        let token = request?.token || crypto.randomBytes(64).toString('hex')
+
        
         request=await db.request.create({token:token,
                                          requestToken:crypto.randomBytes(64).toString('hex'),
@@ -82,8 +87,7 @@ router.post("/create",async (req,res)=>{
             else{
                 sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,`[lab2go] Richiesta di approvazione ID:${request.id}`,mailBody,global.mail.DEV_MAIL,global.mailext.REQSUB)
             }
-
-            
+  
 
         }
         catch(exc){
@@ -91,10 +95,10 @@ router.post("/create",async (req,res)=>{
         }
         res.json({request})
     }
-    catch(exc)
+    catch(err)
     {
-        console.log("Exc:",exc)
-        return res.status(500).json({"exc":exc})
+        console.log(err)
+        return res.status(500).json(err.message)
     }
     
     
@@ -105,7 +109,6 @@ router.put("/commit",async(req,res)=>{
     const t = await db.sequelize.transaction({isolationLevel: Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED});
     let error=""
     try{
-
         
         let requests=await db.request.findAll({where:{'status':'ACCEPTED'},transaction:t})
         

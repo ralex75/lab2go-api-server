@@ -1,5 +1,6 @@
 const jwt=require("jsonwebtoken")
 const {DuplicateUserFound}=require("./exceptions")
+const db = require("../models/index");
 
 const checkAuth=(req,res,next)=>{
  
@@ -19,17 +20,17 @@ const checkAuth=(req,res,next)=>{
 
 
 const createAccount=async ({email,password,name,surname})=>{
-  const db = require("../models/index");
+ 
   const bcrypt=require("bcrypt")
 
-  const user=await db.users.findOne({ where: {email:email},raw:true})
+  const user=await db.user.findOne({ where: {email:email},raw:true})
 
   if(user) throw new DuplicateUserFound("Cannot create, duplicate user found.")
   
   const hashedPasswd=bcrypt.hashSync(password,10)
   
   try{
-     const user=await db.users.create({"name":name,"surname":surname,"email":email,"password":hashedPasswd})
+     const user=await db.user.create({"name":name,"surname":surname,"email":email,"password":hashedPasswd})
     
      return user.toJSON()
   }
@@ -40,4 +41,7 @@ const createAccount=async ({email,password,name,surname})=>{
   
 }
 
-module.exports={checkAuth,createAccount}
+
+
+module.exports={checkAuth,
+                createAccount}

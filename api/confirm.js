@@ -15,7 +15,7 @@ const accept=async (request)=>{
     
     const {readTemplate,replaceInTemplate}=require("./utils")
    
-    let user=await db.users.findOne({ where: {email:request.userEmail},raw:true})
+    let user=await db.user.findOne({ where: {email:request.userEmail},raw:true})
     
     if(!user){
         const code = request.plesso_mec_code

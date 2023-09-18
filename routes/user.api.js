@@ -13,24 +13,24 @@ const router=Router()
 
 router.get("/", auth.checkAuth, async (req,res)=>{
     let {email}=req.user
-    let user=await db.users.findOne({ where: {email:email},raw:true})
+    let user=await db.user.findOne({ where: {email:email},raw:true})
     res.json({user})
 })
 
 router.get("/accounts", auth.checkAuth, async (req,res)=>{
     let {email,roles}=req.user
-    let users=await db.users.findAll({attributes: {exclude: ['password']},raw:true})
+    let users=await db.user.findAll({attributes: {exclude: ['password']},raw:true})
     res.json(users)
 })
 
 router.put("/account",auth.checkAuth,async (req,res)=>{
      //let {email,roles}=req.user
      let {email,role}=req.body
-     let user=await db.users.findOne({ where: {email:email}})
+     let user=await db.user.findOne({ where: {email:email}})
      user.role=role
      user.save()
      try{
-        user=await db.users.findOne({ where: {email:email},raw:true})
+        user=await db.user.findOne({ where: {email:email},raw:true})
         res.json(user)
      }
      catch(err){
@@ -68,7 +68,7 @@ router.post("/create",async(req,res)=>{
 router.post("/login",async (req,res)=>{
     
     let {email,password}=req.body
-    let user=await db.users.findOne({ where: {email:email},raw: true})
+    let user=await db.user.findOne({ where: {email:email},raw: true})
     if(!user) return res.status(401).json("User not found.")
     
     console.log(user.password)
