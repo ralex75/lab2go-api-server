@@ -21,18 +21,19 @@ const checkAuth=(req,res,next)=>{
 
 const createAccount=async ({email,password,name,surname})=>{
  
-  const bcrypt=require("bcrypt")
+  
 
   const user=await db.user.findOne({ where: {email:email},raw:true})
 
   if(user) throw new DuplicateUserFound("Cannot create, duplicate user found.")
   
-  const hashedPasswd=bcrypt.hashSync(password,10)
+  const hashedPasswd=hashPassword(password)
   
   try{
      const user=await db.user.create({"name":name,"surname":surname,"email":email,"password":hashedPasswd})
     
-     return user.toJSON()
+     return user
+     //return user.toJSON()
   }
   catch(exc){
      throw exc   
@@ -41,7 +42,13 @@ const createAccount=async ({email,password,name,surname})=>{
   
 }
 
+const hashPassword=(password)=>{
+    const bcrypt=require("bcrypt")
+    return bcrypt.hashSync(password,10)
+}
+
 
 
 module.exports={checkAuth,
-                createAccount}
+                createAccount,
+                hashPassword}

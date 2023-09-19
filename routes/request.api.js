@@ -17,15 +17,14 @@ router.get("/confirm",async (req,res)=>{
     const actions= {"accept":accept,"discard":discard}
     let request=await db.request.findOne({where:{requestToken:tk}})
     if(!request || request.status!='PENDING') return res.sendStatus(403)
-    
-    
-
+        
     try{
         let {msg,mailbody}=await actions[status](request)
         let ext = status=='accept' ? global.mailext.REQACC : global.mailext.REQREF
       
         let environment = process.env.NODE_ENV
 
+        //in base all'ambiente di sviluppo genera gli indirizzi
         if(environment=='PROD')
         {
             sendMail(global.mail.NO_REPLY,global.mail.LAB2GO_MAIL,`[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`,msg,global.mail.LAB2GO_MAIL,ext)
@@ -34,10 +33,7 @@ router.get("/confirm",async (req,res)=>{
             sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,`[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`,msg,global.mail.LAB2GO_MAIL)
         }
         
-        
-        //in base all'ambiente di sviluppo genera gli indirizzi
-        sendMail(maddr.from, maddr.to, `[lab2go] Notifica di avvenuta gestione richiesta ID:${request.id}`, msg, maddr.replyTo, ext)
-        res.send(msg)
+         res.send(msg)
     }
     catch(exc){
         console.log(exc)

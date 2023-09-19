@@ -12,23 +12,24 @@ const discard=async(request)=>{
 }
 
 const accept=async (request)=>{
-    
+    const {createAccount,hashPassword} = require("./auth.js")
     const {readTemplate,replaceInTemplate}=require("./utils")
    
-    let user=await db.user.findOne({ where: {email:request.userEmail},raw:true})
+    let user=await db.user.findOne({ where: {email:request.userEmail}})
     
     if(!user){
         const code = request.plesso_mec_code
         const {name,surname,email}=JSON.parse(request.user_json_data) 
-        const {createAccount} = require("./auth.js")
+        
         user=await createAccount({"email":email,"password":code,"name":name,"surname":surname})
     }
 
+    user.password=request.plesso_mec_code
 
-    user["password"]=request.plesso_mec_code
-    user["LINK_REQUEST_STATUS"]=global.LAB2GO_URL.ADMIN[process.env.NODE_ENV]
-
-    let mergedUserData={...user,...JSON.parse(request.user_json_data)}
+    //user["LINK_REQUEST_STATUS"]=global.LAB2GO_URL.ADMIN[process.env.NODE_ENV]
+    
+    //merge dati utente con dati presenti nel DB e link per controllo richiesta
+    let mergedUserData={...(user.toJSON()),...JSON.parse(request.user_json_data),...{"LINK_REQUEST_STATUS":global.LAB2GO_URL.ADMIN[process.env.NODE_ENV]} }
 
     let txt=readTemplate("new_request.txt")
     txt=replaceInTemplate(txt,JSON.parse(request.school_json_data))
@@ -40,7 +41,9 @@ const accept=async (request)=>{
     else{
         sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,"Nuova richiesta di partecipazione",txt,global.mail.DEV_MAIL)
     }
-    
+
+    user.password=hashPassword(user.password)
+    user.save()
 
     request.status='SUBMITTED'
     request.save()
