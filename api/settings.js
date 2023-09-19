@@ -10,7 +10,7 @@ const isOutOfDate=async(key)=>{
 
 const allowRequestSchoolUntilAt=async (req,res,next)=>{
   
-    if(await isOutOfDate('allow_request_school_untilAt'))
+    if(await isOutOfDate('allow_new_edit_request_date'))
     {
         return next("Creazione nuova richiesta non consentita: limite di tempo massimo raggiunto.")
     }
