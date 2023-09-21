@@ -13,42 +13,54 @@ const router=Router()
 
 router.get("/", auth.checkAuth, async (req,res)=>{
     let {email}=req.user
-    let user=await db.user.findOne({ where: {email:email},raw:true})
+    let user=await db.users.findOne({ where: {email:email},raw:true})
     res.json({user})
 })
 
-router.get("/accounts", auth.checkAuth, async (req,res)=>{
+router.get("/list", auth.checkAuth, async (req,res)=>{
     let {email,roles}=req.user
-    let users=await db.user.findAll({attributes: {exclude: ['password']},raw:true})
+    let users=await db.users.findAll({attributes: {exclude: ['password']},raw:true})
     res.json(users)
 })
 
-router.put("/account",auth.checkAuth,async (req,res)=>{
-     //let {email,roles}=req.user
-     let {email,role}=req.body
-     let user=await db.user.findOne({ where: {email:email}})
-     user.role=role
-     user.save()
-     try{
-        user=await db.user.findOne({ where: {email:email},raw:true})
-        res.json(user)
-     }
-     catch(err){
-        res.statusCode(500)
-     }
-})
+
 
 router.post("/create",async(req,res)=>{
    
     const {DuplicateUserFound}=require("../api/exceptions")
-    let {email,password,name,surname,role}=req.body
+    let {user,email}=req.body
     const {readTemplate,replaceInTemplate}=require("../api/utils")
-    
+        
     try{
-        await auth.createAccount(req.body)
+        if(!email){ 
+            
+            await auth.createAccount(user) 
+        }
+        else{
+            let cuser=await db.users.findOne({where:{email:email}})
+            cuser.name=user.name
+            cuser.surname=user.surname
+            cuser.email=user.email
+            cuser.role=user.role
+            
+            if(user.password){
+                console.log("passw:",user.password)
+                cuser.password=auth.hashPassword(user.password)
+            }
+            
+            cuser.save()
+            
+        }
         let txt=readTemplate("user_signup.txt")
-        txt=replaceInTemplate(txt,{"username":email,password,name,surname})
-        sendMail("alessandro.ruggieri@roma1.infn.it",email,"Lab2Go - Creazione Account",txt)
+        const data={"username":user.email,"name":user.name,"surname":user.surname}
+        
+            
+        if(user.password){
+            data["password"]=user.password
+        }
+        
+        txt=replaceInTemplate(txt,data)
+        sendMail("alessandro.ruggieri@roma1.infn.it",user.email,"Lab2Go - Dati Account",txt)
         .catch(err=>console.log(err))
         res.json("User created")
     }
@@ -60,7 +72,8 @@ router.post("/create",async(req,res)=>{
             type="duplicated"
             msg=exc.message
         }
-        return res.status(500).json({type,msg})    
+        console.log(exc)
+        return res.status(500).json({type,msg,exc})    
     }
     
 })
@@ -68,7 +81,7 @@ router.post("/create",async(req,res)=>{
 router.post("/login",async (req,res)=>{
     
     let {email,password}=req.body
-    let user=await db.user.findOne({ where: {email:email},raw: true})
+    let user=await db.users.findOne({ where: {email:email},raw: true})
     if(!user) return res.status(401).json("User not found.")
     
     console.log(user.password)
@@ -90,6 +103,13 @@ router.post("/logout",(req,res)=>{
     .json({ message: "Successfully logged out" });
 })
 
+
+router.delete("/:email",async (req,res)=>{
+    let email = req.params.email
+    if(!email) return res.json("cannot delete user, invalid email")
+    await db.users.destroy({where:{email:email}})
+    return res.json("user deleted")
+})
 
 
 
