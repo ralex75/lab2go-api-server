@@ -3,7 +3,7 @@ const express=require('express')
 const db = require("./models/index.js");
 const fileUpload = require('express-fileupload');
 const cookieParser = require("cookie-parser");
-const history=require("express-history-api-fallback-middleware")
+
 
 
 
@@ -56,7 +56,7 @@ const configureAPI=(app)=>{
     app.use((err,req,res,next)=>{
       res.status(500).send(err)
     })
-    app.use(history());
+    
 
 }
 
