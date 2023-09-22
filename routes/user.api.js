@@ -13,13 +13,13 @@ const router=Router()
 
 router.get("/", auth.checkAuth, async (req,res)=>{
     let {email}=req.user
-    let user=await db.users.findOne({ where: {email:email},raw:true})
+    let user=await db.user.findOne({ where: {email:email},raw:true})
     res.json({user})
 })
 
 router.get("/list", auth.checkAuth, async (req,res)=>{
     let {email,roles}=req.user
-    let users=await db.users.findAll({attributes: {exclude: ['password']},raw:true})
+    let users=await db.user.findAll({attributes: {exclude: ['password']},raw:true})
     res.json(users)
 })
 
@@ -37,7 +37,7 @@ router.post("/create",async(req,res)=>{
             await auth.createAccount(user) 
         }
         else{
-            let cuser=await db.users.findOne({where:{email:email}})
+            let cuser=await db.user.findOne({where:{email:email}})
             cuser.name=user.name
             cuser.surname=user.surname
             cuser.email=user.email
@@ -81,7 +81,7 @@ router.post("/create",async(req,res)=>{
 router.post("/login",async (req,res)=>{
     
     let {email,password}=req.body
-    let user=await db.users.findOne({ where: {email:email},raw: true})
+    let user=await db.user.findOne({ where: {email:email},raw: true})
     if(!user) return res.status(401).json("User not found.")
     
     console.log(user.password)
@@ -107,7 +107,7 @@ router.post("/logout",(req,res)=>{
 router.delete("/:email",async (req,res)=>{
     let email = req.params.email
     if(!email) return res.json("cannot delete user, invalid email")
-    await db.users.destroy({where:{email:email}})
+    await db.user.destroy({where:{email:email}})
     return res.json("user deleted")
 })
 

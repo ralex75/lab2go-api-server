@@ -135,7 +135,7 @@ router.put("/commit",async(req,res)=>{
         
     }
     catch(exc){
-        console.log(exc)
+        console.log(exc.message)
         error=exc.message
         await t.rollback();
     }
