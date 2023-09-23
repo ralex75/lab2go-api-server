@@ -46,6 +46,12 @@ const configureAPI=(app)=>{
     app.use(fileUpload({ createParentPath: true }));
     app.use(cookieParser())
 
+    app.get("/api/policy",(req,res,next)=>{
+      const path=require("path")
+      res.sendFile("privacy_policy_info.pdf",{root:path.join(__dirname,'/public')},(err)=>{
+        if(err){console.log("error:",err)}
+      })
+    })
     //ROUTES
     app.use('/api/schools',require("./routes/school.api"))
     app.use('/api/requests',require("./routes/request.api"))
