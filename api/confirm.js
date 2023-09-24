@@ -80,5 +80,35 @@ const buildAskConfirm=async (request)=>{
 
 }
 
+const buildAcceptConfirm=async (request)=>{
+
+    const moment=require("moment")
+    const {readTemplate,replaceInTemplate}=require("../api/utils")
+    let {requestToken,school_json_data,user_json_data,createdAt}=request
+    let fileMap={'ACCEPT_INFN_COMMIT':"acc_infn.txt",'ACCEPT_USAP_COMMIT':'acc_usap.txt'} 
+    let fileName=fileMap[request.status]
+    //if(!fileName) throw new Error("No file template for request status:",request.status)
+    let txt=readTemplate("pending_request.txt")
+    txt=replaceInTemplate(txt,JSON.parse(school_json_data))
+    txt=replaceInTemplate(txt,JSON.parse(user_json_data))
+
+    //in base alla variabile di ambiente utilizza l'url corretto
+    let LINK_ACCEPT=`${global.LAB2GO_URL.REQUESTS[process.env.NODE_ENV]}/api/requests/confirm?tk=${requestToken}&status=accept`
+    let LINK_DISCARD=`${global.LAB2GO_URL.REQUESTS[process.env.NODE_ENV]}/api/requests/confirm?tk=${requestToken}&status=discard`
+    
+    //rimuove eventuali multipli backslash nell'URL
+    LINK_ACCEPT=LINK_ACCEPT.replace(/([^:]\/)\/+/g, "$1")
+    LINK_DISCARD=LINK_DISCARD.replace(/([^:]\/)\/+/g, "$1")
+
+    LINK_ACCEPT=`<a href="${LINK_ACCEPT}">accettare</a>`
+    LINK_DISCARD=`<a href="${LINK_DISCARD}">scartare</a>`
+    let TIME=moment(createdAt).format("HH:mm")
+    let DATE=moment(createdAt).format("DD-MM-YYYY")
+    txt=replaceInTemplate(txt,{LINK_ACCEPT,LINK_DISCARD,DATE,TIME})
+    
+    return txt
+
+}
+
 
 module.exports={accept,discard,buildAskConfirm}

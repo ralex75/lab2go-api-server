@@ -106,7 +106,7 @@ router.put("/commit",async(req,res)=>{
     let error=""
     try{
         
-        let requests=await db.request.findAll({where:{'status':'ACCEPTED'},transaction:t})
+        let requests=await db.request.findAll({where:{[Op.or]:[{'status':'ACCEPTED_INFN'},{'status':'ACCEPTED_USAP'}]},transaction:t})
         
         if(!requests.length) {throw new Error("Nothing to finalize")}
         let schools=[]
@@ -127,11 +127,13 @@ router.put("/commit",async(req,res)=>{
         await db.school.bulkCreate(schools,{ transaction: t })
 
         await db.request.update({status:db.sequelize.literal("status || '_COMMIT'") },{
-            where:{ [Op.or]:[ {'status':"ACCEPTED"},{'status':"REJECTED"}] },
+            where:{ [Op.or]:[ {'status':"ACCEPTED_INFN"},{'status':"ACCEPTED_USAP"},{'status':"REJECTED"}] },
             transaction: t 
         })
 
         await t.commit();
+
+
         
     }
     catch(exc){
@@ -142,6 +144,8 @@ router.put("/commit",async(req,res)=>{
 
     res.json({"done":!error,"exc":error})
 })
+
+
 
 router.put("/:rid/update",async (req,res)=>{
     let {usr_data,disci_accepted,status}=req.body
@@ -163,8 +167,9 @@ router.post("/list",auth.checkAuth,async (req,res)=>{
    
     let {filter}=req.body
     let {email,role}=req.user
-    let where={"status":{ [Op.in]:['ACCEPTED','REJECTED','SUBMITTED','PENDING'] }}
-    
+    let where={"status":{ [Op.notLike]:'%COMMIT' }}
+   
+
     if(role!='ADMIN' && role!='COORDINATORE'){
         where={"userEmail":email}
         let preq=await db.request.findOne({where:where,attributes:['token'],raw:true})
