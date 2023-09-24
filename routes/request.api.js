@@ -120,7 +120,7 @@ router.put("/commit",async(req,res)=>{
                 "discipline":r.disci_accepted,
                 "token":r.token,
                 "userEmail":r.userEmail,
-                "tutors":""
+                "tutor":""
             })
         });
 

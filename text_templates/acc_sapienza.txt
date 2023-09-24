@@ -1,0 +1,24 @@
+All’attenzione del D.S.
+dei Responsabili PCTO
+del Docente richiedente
+
+Con la presente informiamo che la Vostra scuola [SCHOOL_NAME] è stata ammessa al percorso PCTO Lab2Go (https://web.infn.it/lab2go/) per l’Anno Scolastico 2022-2023.
+Alla scuola è stata assegnata la disciplina [SCHOOL_DISCI]. In Cc il tutor, Dr [TUTOR_NAME].
+
+Vi invitiamo a prendere contatti con il tutor assegnato per programmare l’avvio delle attività nella Vostra scuola.
+
+Il tutor è il vostro principale punto di contatto con il progetto, tramite il tutor riceverete informazioni e comunicazioni.
+
+Per ulteriori chiarimenti di ordine generale sul progetto, potete contattare i coordinatori nazionali Lab2go, elencati qui di seguito, oppure il coordinatore di disciplina: <nome_coordinatore> <email_coordinatore>
+
+Coordinatori nazionali:
+
+Dott.ssa Giulia De Bonis (INFN) - giulia.debonis@roma1.infn.it
+
+Prof. Massimo Reverberi (Sapienza) - massimo.reverberi@uniroma1.it
+
+Siete pregati di confermare l'accettazione tramite questo url: LINK_CONFIRM
+
+Cordialmente, per il Comitato di Coordinamento di LAB2GO,
+
+COORD_DISCI

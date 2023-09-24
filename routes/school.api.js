@@ -122,13 +122,13 @@ router.put("/:id",
       return res.status(400).json({ errors: errors.array() });
     }*/
 
-    const {tutors,...school}=req.body.school
+    const {tutor,...school}=req.body.school
 
     let sc=await db.school.findByPk(req.params.id)
    
     
     sc.school_json_data=JSON.stringify(school)
-    sc.tutors=tutors
+    sc.tutor=JSON.stringify(tutor)
     sc.save()
     res.json("done")
 });
