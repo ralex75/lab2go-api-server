@@ -9,9 +9,15 @@ const request = require("./request.model")(sequelize, Sequelize);
 const school  = require("./school.model")(sequelize, Sequelize);
 const student  = require("./student.model")(sequelize, Sequelize);
 const setting  = require("./setting.model")(sequelize, Sequelize);
+const tutor  = require("./tutor.model")(sequelize, Sequelize);
+const referent  = require("./referent.model")(sequelize, Sequelize);
+const assignment  = require("./assignment.model")(sequelize, Sequelize);
 
 school.hasMany(student)
 student.belongsTo(school,{foreignKey: 'schoolId'})
+assignment.belongsTo(school,{foreignKey: 'schoolId'})
+assignment.belongsTo(tutor,{foreignKey: 'tutorId'})
+assignment.belongsTo(request,{foreignKey: 'requestId'})
 
 const db = {
     Sequelize,
@@ -21,6 +27,9 @@ const db = {
     school,
     student,
     setting,
+    tutor,
+    referent,
+    assignment
 }
 
 
