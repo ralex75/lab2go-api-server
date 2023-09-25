@@ -18,7 +18,7 @@ router.post("/",auth.checkAuth, async (req,res)=>{
         where["userEmail"]=email
     }
     
-    const schools=await db.school.findAll({where:where,include: db.student})
+    const schools=await db.school.findAll({where:where,include: [{model:db.student},{model:db.assignment}]})
    
     res.json({schools})
 });

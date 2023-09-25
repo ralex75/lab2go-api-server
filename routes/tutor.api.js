@@ -28,6 +28,8 @@ router.put("/:id",async (req,res)=>{
     res.json("tutor updated")
 })
 router.delete("/:id",async (req,res)=>{
+    let tutor=db.tutor.findByPk(id,{raw:true})
+    if(tutor.email=='noreply@infn.it') return res.json("Questo tutor non può essere eliminato")
     await db.tutor.destroy({where:{id:req.params.id}})
     res.json("tutor deleted")
 })

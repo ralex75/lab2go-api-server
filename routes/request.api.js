@@ -109,9 +109,9 @@ router.put("/commit",async(req,res)=>{
         let requests=await db.request.findAll({where:{[Op.or]:[{'status':'ACCEPTED_INFN'},{'status':'ACCEPTED_USAP'}]},transaction:t})
         
         if(!requests.length) {throw new Error("Nothing to finalize")}
-        let schools=[]
-        requests.forEach(r => {
-            schools.push({
+      
+        requests.forEach(async (r) => {
+            let school={
                 "year":r.year,
                 "school_mec_code":r.school_mec_code,
                 "plesso_mec_code":r.plesso_mec_code,
@@ -120,11 +120,30 @@ router.put("/commit",async(req,res)=>{
                 "discipline":r.disci_accepted,
                 "token":r.token,
                 "userEmail":r.userEmail,
-                "tutor":""
+            }
+
+            
+            school=await db.school.create(school,{ transaction: t })
+
+            let discipline=JSON.parse(r.disci_accepted)
+            Object.keys(discipline).forEach(async k=>{
+            
+                let assignment={
+                    schoolId: school.id,
+                    tutorId: parseInt(discipline[k]),
+                    requestId: r.id,
+                    disciplina: k,
+                }
+
+
+                await db.assignment.create(assignment,{ transaction: t })
+
             })
+
+            
         });
 
-        await db.school.bulkCreate(schools,{ transaction: t })
+       
 
         await db.request.update({status:db.sequelize.literal("status || '_COMMIT'") },{
             where:{ [Op.or]:[ {'status':"ACCEPTED_INFN"},{'status':"ACCEPTED_USAP"},{'status':"REJECTED"}] },

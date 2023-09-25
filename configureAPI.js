@@ -68,7 +68,7 @@ const configureAPI=(app)=>{
 }
 
 
-db.sequelize.sync({alter:true})
+db.sequelize.sync({alter:false})
 
 
 module.exports={configureAPI}
