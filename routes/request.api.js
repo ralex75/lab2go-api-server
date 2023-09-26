@@ -102,6 +102,9 @@ router.post("/create", settings.allowRequestSchoolUntilAt, async (req,res)=>{
 
 router.put("/commit",async(req,res)=>{
     const { Transaction } = require('sequelize');
+    const {readTemplate,replaceInTemplate}=require("./utils")
+    
+
     const t = await db.sequelize.transaction({isolationLevel: Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED});
     let error=""
     try{
@@ -121,11 +124,13 @@ router.put("/commit",async(req,res)=>{
                 "token":r.token,
                 "userEmail":r.userEmail,
             }
-
-            
+  
             school=await db.school.create(school,{ transaction: t })
 
             let discipline=JSON.parse(r.disci_accepted)
+
+            //per ogni disciplina creiamo un entry nella tabella assegnamenti
+            //i tutor sono per disciplina
             Object.keys(discipline).forEach(async k=>{
             
                 let assignment={
@@ -135,9 +140,15 @@ router.put("/commit",async(req,res)=>{
                     disciplina: k,
                 }
 
-
                 await db.assignment.create(assignment,{ transaction: t })
 
+                let referents=await db.referent.findAll({where:{"disciplina":assignment.disciplina},raw:true})
+                let status=r.status
+                referents=referents.filter(r=>r.entity.indexOf(status)>-1)
+
+                //invia mail
+                let tpl=readTemplate(`acc_${referents[0].entity}.txt`.toLowerCase())
+                
             })
 
             
@@ -152,8 +163,6 @@ router.put("/commit",async(req,res)=>{
 
         await t.commit();
 
-
-        
     }
     catch(exc){
         console.log(exc.message)
