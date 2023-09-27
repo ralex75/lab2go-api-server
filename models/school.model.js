@@ -10,6 +10,7 @@ module.exports = (sequelize, Sequelize) => {
           discipline:{type:Sequelize.STRING},
           token:{type: Sequelize.STRING,allowNull:false },
           userEmail:{type:Sequelize.STRING,allowNull:false},
+          requestId:{type:Sequelize.INTEGER,allowNull:false},
           status: {type:Sequelize.STRING,defaultValue:'NOT_CONFIRMED'}
       },
       {

@@ -4,7 +4,8 @@ const {Op,QueryTypes} = require("sequelize")
 const {sendMail} = require("../api/mailer");
 const global=require("../api/global")
 const auth=require("../api/auth")
-const settings=require("../api/settings")
+const settings=require("../api/settings");
+const { replaceInTemplate } = require("../api/utils");
 
 const router=Router()
 
@@ -123,6 +124,7 @@ router.put("/commit",async(req,res)=>{
                 "discipline":r.disci_accepted,
                 "token":r.token,
                 "userEmail":r.userEmail,
+                "requestId":r.id
             }
   
             school=await db.school.create(school,{ transaction: t })
@@ -142,12 +144,6 @@ router.put("/commit",async(req,res)=>{
 
                 await db.assignment.create(assignment,{ transaction: t })
 
-                let referents=await db.referent.findAll({where:{"disciplina":assignment.disciplina},raw:true})
-                let status=r.status
-                referents=referents.filter(r=>r.entity.indexOf(status)>-1)
-
-                //invia mail
-                let tpl=readTemplate(`acc_${referents[0].entity}.txt`.toLowerCase())
                 
             })
 
@@ -173,6 +169,31 @@ router.put("/commit",async(req,res)=>{
     res.json({"done":!error,"exc":error})
 })
 
+
+const sendConfirmSchool=async ()=>{
+    let schools=await db.findAll({raw:true})
+    let requests=await db.request.findAll({raw:true})
+    let assignments=await db.assignment.findAll({raw:true})
+    let referents=await db.referent.findAll({raw:true})
+    assignments.forEach(async assignment=>{
+        
+        //richiesta
+        let request=requests.filter(r.id==assignment.requestId)[0]
+
+        //recupera il referente filtrando per disciplina e per lo stato della richiesta
+        let referent=referents.filter(r=> (r.disciplina.toLowerCase()==assignment.disciplina.toLowerCase() && request.status.indexOf(r)>-1))[0]  
+       
+        if(!referent){
+            console.log("referente non trovato, requestID:",request.id)
+            console.log("referente non trovato, assignment:",assignment.id)
+        }
+
+        //legge template
+        let tpl=readTemplate(`acc_${referent.entity}.txt`.toLowerCase())
+        let html=replaceInTemplate(tpl,data)
+        
+    })
+}
 
 
 router.put("/:rid/update",async (req,res)=>{

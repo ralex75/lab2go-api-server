@@ -1,0 +1,16 @@
+"BIOLOGIA ANIMALE" "Claudio Chimenti" claudio.chimenti@uniroma1.it
+
+"BIOLOGIA"VEGETALE" "Massimo Reverberi" massimo.reverberi@uniroma1.it
+
+"CHIMICA" "Antonella Cartoni" antonella.cartoni@uniroma1.it
+
+"FISICA INFN" "Giulia De Bonis" giulia.debonis@roma1.infn.it
+"FISICA USAP" "Stefano Sarti" stefano.sarti@uniroma1.it
+
+"MUSEI SCIENTIFICI" "Federica Favino" federica.favino@uniroma1.it
+
+"ROBOTICA" "Luca Iocchi"iocchi@diag.uniroma1.it
+
+"SCIENZE DELLA TERRA" "Marco"Scuderi" marco.scuderi@uniroma1.it
+"SCIENZE DELLA TERRA" "Daniela"Piacentini" daniela.piacentini@uniroma1.it
+

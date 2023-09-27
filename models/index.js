@@ -15,6 +15,7 @@ const assignment  = require("./assignment.model")(sequelize, Sequelize);
 
 school.hasMany(student)
 school.hasMany(assignment,{onDelete: 'CASCADE'})
+school.belongsTo(request,{foreignKey:'requestId'})
 student.belongsTo(school,{foreignKey: 'schoolId'})
 assignment.belongsTo(school,{foreignKey: 'schoolId'})
 assignment.belongsTo(tutor,{foreignKey: 'tutorId'})
