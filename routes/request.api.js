@@ -103,9 +103,8 @@ router.post("/create", settings.allowRequestSchoolUntilAt, async (req,res)=>{
 
 router.put("/commit",async(req,res)=>{
     const { Transaction } = require('sequelize');
-    const {readTemplate,replaceInTemplate}=require("./utils")
     
-
+    
     const t = await db.sequelize.transaction({isolationLevel: Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED});
     let error=""
     try{
@@ -139,7 +138,8 @@ router.put("/commit",async(req,res)=>{
                     schoolId: school.id,
                     tutorId: parseInt(discipline[k]),
                     requestId: r.id,
-                    disciplina: k,
+                    disciplina: k
+                 
                 }
 
                 await db.assignment.create(assignment,{ transaction: t })
@@ -166,34 +166,93 @@ router.put("/commit",async(req,res)=>{
         await t.rollback();
     }
 
+    if(!error){
+        sendConfirmSchool()
+    }
+
     res.json({"done":!error,"exc":error})
 })
 
-
-const sendConfirmSchool=async ()=>{
-    let schools=await db.findAll({raw:true})
-    let requests=await db.request.findAll({raw:true})
-    let assignments=await db.assignment.findAll({raw:true})
+router.get("/sendAskConfirm",async (req,res)=>{
+//const sendConfirmSchool=async ()=>{
+    
+    const global = require("../api/global")
+    let year=new Date().getFullYear()
+    let schools=await db.school.findAll({where:{year:year},raw:true})
+    let requests=await db.request.findAll({where:{year:year},raw:true})
+    let assignments=await db.assignment.findAll({where:{year:year},raw:true})
+    let tutors=await db.tutor.findAll({raw:true})
     let referents=await db.referent.findAll({raw:true})
+    
+    
+
+    let fileTemplateMap={
+        "Robotica":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
+        "Musei Scientifici":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
+        "Chimica":{"contact":'active',"tutor":"notutor","file":"msg_attivo_notutor"},
+        "Scienze della Terra":{"contact":'passivo',"tutor":"notutor","file":"msg_passivo_notutor"},
+        "Biologia Vegetale":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
+        "Biologia Animale":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
+        "Fisica":{"contact":'passivo',"tutor":"tutor","file":"msg_fisica"},
+    }
+  
+    
+
     assignments.forEach(async assignment=>{
         
         //richiesta
-        let request=requests.filter(r.id==assignment.requestId)[0]
+        let request=requests.filter(r=>r.id==assignment.requestId)[0]
 
         //recupera il referente filtrando per disciplina e per lo stato della richiesta
-        let referent=referents.filter(r=> (r.disciplina.toLowerCase()==assignment.disciplina.toLowerCase() && request.status.indexOf(r)>-1))[0]  
+        let referent=referents.filter(r=> (r.disciplina.toLowerCase()==assignment.disciplina.toLowerCase()))
        
-        if(!referent){
-            console.log("referente non trovato, requestID:",request.id)
-            console.log("referente non trovato, assignment:",assignment.id)
+      
+        let tutor=tutors.filter(t=>t.id==assignment.tutorId)[0]
+       
+        let ftm=fileTemplateMap[assignment.disciplina]
+
+        let school=schools.filter(s=>s.id==assignment.schoolId)[0]
+        school=JSON.parse(school.school_json_data)
+        
+        let fileTemplate=ftm.file
+
+        //solo fisica ha distinzione tra USAP e INFN quindi ha 2 referenti per disciplina
+        if(referent.length>1){
+            referent=referent.filter(r=>request.status.indexOf(r.entity)>-1)
+            referent=referent[0]
+            fileTemplate+=`_${referent.entity}`
+        }
+        else{
+            referent=referent[0]
         }
 
+        
+
+        let lnk_confirm=`${global.LAB2GO_URL.ADMIN.DEV}/api/schools/confirm?code=${school.plesso_mec_code}&year=${year}&email=${school.userEmail}`
+
+        console.log("File Template:",fileTemplate)
+
+        const {readTemplate,replaceInTemplate}=require("../api/utils")
+
         //legge template
-        let tpl=readTemplate(`acc_${referent.entity}.txt`.toLowerCase())
+        let tpl=readTemplate(`${fileTemplate}.txt`.toLowerCase())
+        let data={"SCHOOL_NAME":school.sc_tab_plesso,"SCHOOL_DISCI":assignment.disciplina,
+                   "REFER_DISCI":referent.name,"REFER_DISCI_EMAIL":referent.email,
+                   "TUTOR_NAME": tutor.name,"TUTOR_EMAIL":tutor.email,
+                   "LINK_CONFIRM":`<a href="${lnk_confirm}">Conferma</a>`
+                }
+        
         let html=replaceInTemplate(tpl,data)
+
+        console.log("html:",html)
+
+        sendMail("alessandro.ruggieri@roma1.infn.it","alessandro.ruggieri@roma1.infn.it","Accettazione",html)
         
     })
-}
+//}
+res.json("done")
+})
+
 
 
 router.put("/:rid/update",async (req,res)=>{

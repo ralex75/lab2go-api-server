@@ -1,12 +1,11 @@
-Messaggio di accettazione, contatto attivo, no tutor, link di conferma
+<PRE>
 
----
-Con la presente informiamo che la Vostra scuola XXX è stata ammessa al percorso PCTO Lab2Go (https://web.infn.it/lab2go/) per l'Anno Scolastico 2023-2024.
+Con la presente informiamo che la Vostra scuola [SCHOOL_NAME] è stata ammessa al percorso PCTO Lab2Go (https://web.infn.it/lab2go/) per l'Anno Scolastico 2023-2024.
 
-Alla Vostra scuola è stata assegnata la disciplina YYYY, il cui referente è
-<nome_referente_disciplina> <email_referente_disciplina>
+Alla Vostra scuola è stata assegnata la disciplina [SCHOOL_DISCI], il cui referente è
+[REFER_DISCI] [REFER_DISCI_EMAIL]
 
-IMPORTANTE: Vi chiediamo di confermare, entro e non oltre una settimana dalla ricezione della presente, il vostro interesse a partecipare selezionando il seguente link <link> oppure tramite il sito di gestione delle richieste (https://l.infn.it/l2gadmin), alla voce "Scuole" usando le credenziali di accesso che avete ricevuto all'atto dell'accettazione della richiesta.
+IMPORTANTE: Vi chiediamo di confermare, entro e non oltre una settimana dalla ricezione della presente, il vostro interesse a partecipare selezionando il seguente link [LINK_CONFIRM] oppure tramite il sito di gestione delle richieste (https://l.infn.it/l2gadmin), alla voce "Scuole" usando le credenziali di accesso che avete ricevuto all'atto dell'accettazione della richiesta.
 
 A seguito della conferma, sarete contattati al più presto dal referente di disciplina per ulteriori informazioni e comunicazioni operative sulle modalità di svolgimento del progetto.
 
@@ -20,5 +19,6 @@ Prof. Massimo Reverberi (Sapienza) - massimo.reverberi@uniroma1.it
 
 Cordialmente, per il Comitato di Coordinamento di LAB2GO,
 
-    <referente di disciplina>
+    [REFER_DISCI]
 
+</PRE>
