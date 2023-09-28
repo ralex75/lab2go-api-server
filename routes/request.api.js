@@ -212,7 +212,7 @@ router.get("/sendAskConfirm",async (req,res)=>{
         let ftm=fileTemplateMap[assignment.disciplina]
 
         let school=schools.filter(s=>s.id==assignment.schoolId)[0]
-        school=JSON.parse(school.school_json_data)
+        let sd=JSON.parse(school.school_json_data)
         
         let fileTemplate=ftm.file
 
@@ -236,7 +236,7 @@ router.get("/sendAskConfirm",async (req,res)=>{
 
         //legge template
         let tpl=readTemplate(`${fileTemplate}.txt`.toLowerCase())
-        let data={"SCHOOL_NAME":school.sc_tab_plesso,"SCHOOL_DISCI":assignment.disciplina,
+        let data={"SCHOOL_NAME":sd.sc_tab_plesso,"SCHOOL_DISCI":assignment.disciplina,
                    "REFER_DISCI":referent.name,"REFER_DISCI_EMAIL":referent.email,
                    "TUTOR_NAME": tutor.name,"TUTOR_EMAIL":tutor.email,
                    "LINK_CONFIRM":`<a href="${lnk_confirm}">Conferma</a>`
