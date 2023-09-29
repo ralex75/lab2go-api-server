@@ -3,7 +3,7 @@
 Con la presente informiamo che la Vostra scuola [SCHOOL_NAME] è stata ammessa al percorso PCTO Lab2Go (https://web.infn.it/lab2go/) per l'Anno Scolastico 2023-2024.
 
 Alla Vostra scuola è stata assegnata la disciplina FISICA in collaborazione con l'INFN, la cui referente è
-Giulia De Bonis (giulia.debonis@roma1.infn.it.
+Giulia De Bonis <a href="mailTo:giulia.debonis@roma1.infn.it">giulia.debonis@roma1.infn.it</a>.
 
 Il tutor con cui collaborerete e' [TUTOR_NAME] [TUTOR_EMAIL].
 

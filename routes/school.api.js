@@ -39,16 +39,17 @@ router.get("/:schoolId/students",async (req,res)=>{
     res.json({students})
 })
 
-router.post("/confirm",async (req,res)=>{
+router.get("/confirm",async (req,res)=>{
+    const moment = require("moment")
     let {code,year,email}=req.query
     let school=await db.school.findOne({where:{"plesso_mec_code":code,"year":year,"userEmail":email}})
     if(!school) res.sendStatus(403)
     let createdAt=school.createdAt
     let dayElapsed=moment().diff(moment(createdAt),'days')+1
-    if(dayElapsed>7) res.sendStatus(403)
+    if(dayElapsed>7) res.send("Lab2GO: Spiacenti il link di conferma è scaduto.")
     school.status="CONFIRMED"
     school.save()
-    res.send("Lab2GO: Grazie per aver confermato la vostra partecipazione")
+    res.send("Lab2GO: Grazie per aver confermato la vostra partecipazione.")
 })
 
 router.post("/search", async (req,res)=>{

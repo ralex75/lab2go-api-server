@@ -242,7 +242,9 @@ const sendConfirmSchool=async ()=>{
             let sd=JSON.parse(school.school_json_data) //dati scuola
             let ud=JSON.parse(school.user_json_data)   //dati richiedente
         
-            let lnk_confirm=`${global.LAB2GO_URL.ADMIN[process.env.NODE_ENV]}/api/schools/confirm?code=${school.plesso_mec_code}&year=${year}&email=${school.userEmail}`
+            let environment=process.env.NODE_ENV.trim()
+           
+            let lnk_confirm=`${global.LAB2GO_URL.ADMIN[environment]}/api/schools/confirm?code=${school.plesso_mec_code}&year=${year}&email=${school.userEmail}`
            
             //legge template
             let tpl=readTemplate(`${fileTemplate}.txt`.toLowerCase())
@@ -251,7 +253,7 @@ const sendConfirmSchool=async ()=>{
                     "SCHOOL_NAME":sd.sc_tab_plesso,"SCHOOL_DISCI":assignment.disciplina,
                     "REFER_DISCI":referent[0].name,"REFER_DISCI_EMAIL":referent[0].email,
                     "LISTA_REF":referent.map(r=>`${r.name}`).join("\n"),
-                    "LISTA_REF_WITH_MAIL":referent.map(r=>`${r.name} ${r.email}`).join("<br>"),
+                    "LISTA_REF_WITH_MAIL":referent.map(r=>`${r.name} <a href="${r.email}">${r.email}</a>`).join("\n"),
                     "TUTOR_NAME": tutor?.name,"TUTOR_EMAIL":tutor?.email,
                     "LINK_CONFIRM":`<a href="${lnk_confirm}">Conferma</a>`
                     }
@@ -262,10 +264,16 @@ const sendConfirmSchool=async ()=>{
 
             let subject=`Benvenuti a LAB2GO A.S. 2023-2024`
             let from=replyTo=global.mail.LAB2GO_MAIL
-            let cc=[...referent.map(r=>r.email),tutor?.email]
+            let cc=[...referent.map(r=>r.email)]
+            if(tutor && tutor.email!=global.mail.NO_REPLY)
+            {
+                cc.push(tutor.email)
+            }
             let to=[sd.sc_tab_email,ud.email]
             to=[...to,...ud.emailAlt] //merge array
-            let environment=process.env.NODE_ENV
+            
+
+            
 
             if(environment=='PROD')
             {
