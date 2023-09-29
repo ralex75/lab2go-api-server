@@ -173,84 +173,127 @@ router.put("/commit",async(req,res)=>{
     res.json({"done":!error,"exc":error})
 })
 
-router.get("/sendAskConfirm",async (req,res)=>{
-//const sendConfirmSchool=async ()=>{
+
+const sendConfirmSchool=async ()=>{
     
     const global = require("../api/global")
+    const {readTemplate,replaceInTemplate}=require("../api/utils")
+
     let year=new Date().getFullYear()
     let schools=await db.school.findAll({where:{year:year},raw:true})
     let requests=await db.request.findAll({where:{year:year},raw:true})
     let assignments=await db.assignment.findAll({where:{year:year},raw:true})
     let tutors=await db.tutor.findAll({raw:true})
     let referents=await db.referent.findAll({raw:true})
-    
-    
+
 
     let fileTemplateMap={
         "Robotica":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
         "Musei Scientifici":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
         "Chimica":{"contact":'active',"tutor":"notutor","file":"msg_attivo_notutor"},
-        "Scienze della Terra":{"contact":'passivo',"tutor":"notutor","file":"msg_passivo_notutor"},
+        "Scienze della Terra":{"contact":'passivo',"tutor":"notutor","file":"msg_passivo_notutor_sdt"},
         "Biologia Vegetale":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
         "Biologia Animale":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
         "Fisica":{"contact":'passivo',"tutor":"tutor","file":"msg_fisica"},
     }
-  
-    
 
-    assignments.forEach(async assignment=>{
+
+    const prepareData=async (assignment)=>{
         
+
         //richiesta
         let request=requests.filter(r=>r.id==assignment.requestId)[0]
 
         //recupera il referente filtrando per disciplina e per lo stato della richiesta
-        let referent=referents.filter(r=> (r.disciplina.toLowerCase()==assignment.disciplina.toLowerCase()))
-       
-      
+        let refersByDisci=referents.filter(r=> (r.disciplina.toLowerCase()==assignment.disciplina.toLowerCase()))
+
         let tutor=tutors.filter(t=>t.id==assignment.tutorId)[0]
-       
+    
         let ftm=fileTemplateMap[assignment.disciplina]
 
         let school=schools.filter(s=>s.id==assignment.schoolId)[0]
-        let sd=JSON.parse(school.school_json_data)
         
         let fileTemplate=ftm.file
+        let referent = null
 
-        //solo fisica ha distinzione tra USAP e INFN quindi ha 2 referenti per disciplina
-        if(referent.length>1){
-            referent=referent.filter(r=>request.status.indexOf(r.entity)>-1)
-            referent=referent[0]
-            fileTemplate+=`_${referent.entity}`
+        //al momento solo fisica ha distinzione tra USAP e INFN quindi ha 2 referenti per disciplina ma in futuro non si sa...
+        if(refersByDisci.length>1){
+            if(assignment.disciplina.toLowerCase()=='fisica'){
+                referent=refersByDisci.filter(r=>request.status.indexOf(r.entity)>-1)
+                fileTemplate+=`_${referent[0].entity}`
+            }
         }
-        else{
-            referent=referent[0]
-        }
+        
+        if(!referent){ referent=refersByDisci }
+
+              
+        return {school,tutor,referent,fileTemplate}
 
         
+    }
+    
 
-        let lnk_confirm=`${global.LAB2GO_URL.ADMIN.DEV}/api/schools/confirm?code=${school.plesso_mec_code}&year=${year}&email=${school.userEmail}`
+    
+    assignments.forEach(async assignment=>
+        {   
+            
+            let {school,tutor,referent,fileTemplate} = await prepareData(assignment)
 
-        console.log("File Template:",fileTemplate)
-
-        const {readTemplate,replaceInTemplate}=require("../api/utils")
-
-        //legge template
-        let tpl=readTemplate(`${fileTemplate}.txt`.toLowerCase())
-        let data={"SCHOOL_NAME":sd.sc_tab_plesso,"SCHOOL_DISCI":assignment.disciplina,
-                   "REFER_DISCI":referent.name,"REFER_DISCI_EMAIL":referent.email,
-                   "TUTOR_NAME": tutor.name,"TUTOR_EMAIL":tutor.email,
-                   "LINK_CONFIRM":`<a href="${lnk_confirm}">Conferma</a>`
-                }
+            let sd=JSON.parse(school.school_json_data) //dati scuola
+            let ud=JSON.parse(school.user_json_data)   //dati richiedente
         
-        let html=replaceInTemplate(tpl,data)
+            let lnk_confirm=`${global.LAB2GO_URL.ADMIN[process.env.NODE_ENV]}/api/schools/confirm?code=${school.plesso_mec_code}&year=${year}&email=${school.userEmail}`
+           
+            //legge template
+            let tpl=readTemplate(`${fileTemplate}.txt`.toLowerCase())
+            
+            let data={
+                    "SCHOOL_NAME":sd.sc_tab_plesso,"SCHOOL_DISCI":assignment.disciplina,
+                    "REFER_DISCI":referent[0].name,"REFER_DISCI_EMAIL":referent[0].email,
+                    "LISTA_REF":referent.map(r=>`${r.name}`).join("\n"),
+                    "LISTA_REF_WITH_MAIL":referent.map(r=>`${r.name} ${r.email}`).join("<br>"),
+                    "TUTOR_NAME": tutor?.name,"TUTOR_EMAIL":tutor?.email,
+                    "LINK_CONFIRM":`<a href="${lnk_confirm}">Conferma</a>`
+                    }
+                
+            console.log(data)
+            
+            let mailBody=replaceInTemplate(tpl,data)
 
-        console.log("html:",html)
+            let subject=`Benvenuti a LAB2GO A.S. 2023-2024`
+            let from=replyTo=global.mail.LAB2GO_MAIL
+            let cc=[...referent.map(r=>r.email),tutor?.email]
+            let to=[sd.sc_tab_email,ud.email]
+            to=[...to,...ud.emailAlt] //merge array
+            let environment=process.env.NODE_ENV
 
-        sendMail("alessandro.ruggieri@roma1.infn.it","alessandro.ruggieri@roma1.infn.it","Accettazione",html)
+            if(environment=='PROD')
+            {
+                //await sendMail(from,to,subject,mailBody,replyTo,null,cc)
+                console.log("SendToPROD");
+            }
+            else{
+                console.log("SchoolID:",school.id)
+                console.log("From:",from)
+                console.log("To:",to)
+                console.log("Cc:",cc)
+
+                await sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,subject,mailBody,global.mail.DEV_MAIL,"")
+            }
+
+        })
         
-    })
-//}
-res.json("done")
+}
+
+
+router.get("/sendConfirmSchool",async (req,res)=>{
+    try{
+        await sendConfirmSchool()
+    }
+    catch(exc){
+        console.log("SendAskConfirm:",exc)
+    }
+    res.json("done")
 })
 
 

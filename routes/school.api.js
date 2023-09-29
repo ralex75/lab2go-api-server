@@ -39,6 +39,18 @@ router.get("/:schoolId/students",async (req,res)=>{
     res.json({students})
 })
 
+router.post("/confirm",async (req,res)=>{
+    let {code,year,email}=req.query
+    let school=await db.school.findOne({where:{"plesso_mec_code":code,"year":year,"userEmail":email}})
+    if(!school) res.sendStatus(403)
+    let createdAt=school.createdAt
+    let dayElapsed=moment().diff(moment(createdAt),'days')+1
+    if(dayElapsed>7) res.sendStatus(403)
+    school.status="CONFIRMED"
+    school.save()
+    res.send("Lab2GO: Grazie per aver confermato la vostra partecipazione")
+})
+
 router.post("/search", async (req,res)=>{
     let {keyword,year}=req.body
     let query={}
@@ -102,25 +114,9 @@ router.get("/mcode/:code",async(req,res)=>{
 
 router.put("/:id",
 
-    /*[
-        check('name')
-        .not().isEmpty()
-        .withMessage("Il nome della scuola è richiesto")
-        .isLength({ min: 5 })
-        .withMessage("Il nome della scuola deve essere di almeno 5 caratteri"),
-        check('address',"L'indirizzo della scuola è richiesto")
-        .not().isEmpty()
-        .isLength({ min: 5 })
-        .withMessage("L'indirizzo della scuola deve essere di almeno 5 caratteri"),
-     
-    ]*/
-     async (req,res)=>{
    
-    /*const errors = validationResult(req);
-    console.log(errors)
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }*/
+     async (req,res)=>{
+  
 
     const {tutor,...school}=req.body.school
 

@@ -6,6 +6,7 @@ module.exports = (sequelize, Sequelize) => {
          role: { type: Sequelize.STRING,defaultValue:"DOCENTE"},
          name:{type:Sequelize.STRING},
          surname:{type:Sequelize.STRING},
+         emailAlt: { type: Sequelize.STRING },
     },{ timestamps: true })
     return User;
   };

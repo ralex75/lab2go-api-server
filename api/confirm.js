@@ -17,17 +17,18 @@ const accept=async (request)=>{
    
     let user=await db.user.findOne({ where: {email:request.userEmail}})
     
+    const {name,surname,email,emailAlt}=JSON.parse(request.user_json_data) 
+
     if(!user){
         const code = request.plesso_mec_code
-        const {name,surname,email}=JSON.parse(request.user_json_data) 
         
         user=await createAccount({"email":email,"password":code,"name":name,"surname":surname})
+       
     }
 
     user.password=request.plesso_mec_code
-
-    //user["LINK_REQUEST_STATUS"]=global.LAB2GO_URL.ADMIN[process.env.NODE_ENV]
-    
+    user.emailAlt=Array.isArray(emailAlt) ? emailAlt.join(";") : emailAlt
+       
     //merge dati utente con dati presenti nel DB e link per controllo richiesta
     let mergedUserData={...(user.toJSON()),...JSON.parse(request.user_json_data),...{"LINK_REQUEST_STATUS":global.LAB2GO_URL.ADMIN[process.env.NODE_ENV]} }
 

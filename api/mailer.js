@@ -1,9 +1,10 @@
 const nodeMailer = require('nodemailer');
 const {mail} = require("./global")
 
-function sendMail(from,to,subj,body,replyTo=null,ext=""){
+function sendMail(from,to,subj,body,replyTo=null,ext="",cc){
     
     let to_arr= Array.isArray(to) ? to : to.split(";")
+    to_arr=to_arr.filter(i=>i) //rimuove eventuali elementi nulli
    
     let transporter = nodeMailer.createTransport({
         host: 'smtp.roma1.infn.it',
@@ -11,17 +12,11 @@ function sendMail(from,to,subj,body,replyTo=null,ext=""){
     });
 
 
-    console.log("ext:",ext)
-    
-  
-
     if(ext){
         let idx=to_arr.indexOf(mail.LAB2GO_MAIL)
-        console.log("IDX:",idx)
         if(idx>-1){
             let addr=mail.LAB2GO_MAIL.split("@")
             to_arr[idx]=`${addr[0]}+${ext}@${addr[1]}`
-            console.log("to:", to_arr[idx])
         }
     }
 
@@ -32,6 +27,11 @@ function sendMail(from,to,subj,body,replyTo=null,ext=""){
         to:to_arr,
         subject:subj,
         html:body
+    }
+
+    if(cc){
+        let _cc= Array.isArray(cc) ? cc : cc.split(";")
+        mailOptions['cc']= _cc.filter(i=>i) //rimuove eventuali elementi nulli
     }
 
     if(replyTo){
