@@ -257,7 +257,8 @@ const sendConfirmSchool=async ()=>{
                     "TUTOR_NAME": tutor?.name,"TUTOR_EMAIL":tutor?.email,
                     "LINK_CONFIRM":`<a href="${lnk_confirm}">Conferma</a>`
                     }
-                
+            
+                    
             console.log(data)
             
             let mailBody=replaceInTemplate(tpl,data)
@@ -277,8 +278,7 @@ const sendConfirmSchool=async ()=>{
 
             if(environment=='PROD')
             {
-                //await sendMail(from,to,subject,mailBody,replyTo,null,cc)
-                console.log("SendToPROD");
+                await sendMail(from,to,subject,mailBody,replyTo,null,cc)
             }
             else{
                 console.log("SchoolID:",school.id)
