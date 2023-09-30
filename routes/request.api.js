@@ -259,7 +259,7 @@ const sendConfirmSchool=async ()=>{
                     }
             
                     
-            console.log(data)
+            
             
             let mailBody=replaceInTemplate(tpl,data)
 
@@ -274,11 +274,10 @@ const sendConfirmSchool=async ()=>{
             to=[...to,...ud.emailAlt] //merge array
             
 
-            
 
             if(environment=='PROD')
             {
-                await sendMail(from,to,subject,mailBody,replyTo,null,cc)
+                //await sendMail(from,to,subject,mailBody,replyTo,null,cc)
             }
             else{
                 console.log("SchoolID:",school.id)

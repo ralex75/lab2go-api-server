@@ -122,11 +122,18 @@ router.put("/:id",
     const {tutor,...school}=req.body.school
 
     let sc=await db.school.findByPk(req.params.id)
-   
+    let assignments=await db.assignment.findAll({where:{schoolId:sc.id}})
     
     sc.school_json_data=JSON.stringify(school)
-    sc.tutor=JSON.stringify(tutor)
+    sc.discipline=JSON.stringify(tutor)
     sc.save()
+
+    
+    assignments.forEach(async a=>{
+        a.tutorId=tutor[a.disciplina]
+        await a.save()
+    })
+
     res.json("done")
 });
 
