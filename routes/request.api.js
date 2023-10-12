@@ -251,10 +251,10 @@ const sendConfirmSchool=async ()=>{
             
             let data={
                     "SCHOOL_NAME":sd.sc_tab_plesso,"SCHOOL_DISCI":assignment.disciplina,
-                    "REFER_DISCI":referent[0].name,"REFER_DISCI_EMAIL":referent[0].email,
-                    "LISTA_REF":referent.map(r=>`${r.name}`).join("\n"),
-                    "LISTA_REF_WITH_MAIL":referent.map(r=>`${r.name} <a href="${r.email}">${r.email}</a>`).join("\n"),
-                    "TUTOR_NAME": tutor?.name,"TUTOR_EMAIL":tutor?.email,
+                    "REFER_DISCI":referent[0].name,"REFER_DISCI_EMAIL":`(${referent[0].email})`,
+                    "LISTA_REF":referent.map(r=>`Prof. ${r.name}`).join("\n"),
+                    "LISTA_REF_WITH_MAIL":referent.map(r=>`${r.name} (${r.email})`).join("\n"),
+                    "TUTOR_NAME": tutor?.name,"TUTOR_EMAIL":`(${tutor?.email})`,
                     "LINK_CONFIRM":`<a href="${lnk_confirm}">Conferma</a>`
                     }
             
@@ -277,7 +277,7 @@ const sendConfirmSchool=async ()=>{
 
             if(environment=='PROD')
             {
-                //await sendMail(from,to,subject,mailBody,replyTo,null,cc)
+                await sendMail(from,to,subject,mailBody,replyTo,null,cc)
             }
             else{
                 console.log("SchoolID:",school.id)
