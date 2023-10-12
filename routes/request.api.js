@@ -9,6 +9,13 @@ const { replaceInTemplate } = require("../api/utils");
 
 const router=Router()
 
+router.delete("/:id",async (req,res)=>{
+    let id=req.params.id
+    let r=await db.request.findOne({where:{id:id}})
+    r.status='REJECTED'
+    r.save()
+    res.json(`request id ${id} has been set with status REJECTED`)
+})
 
 router.get("/confirm",async (req,res)=>{
     let {tk,status}=req.query
