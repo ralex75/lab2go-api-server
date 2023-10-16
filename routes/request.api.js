@@ -12,7 +12,7 @@ const router=Router()
 router.delete("/:id",async (req,res)=>{
     let id=req.params.id
     let r=await db.request.findOne({where:{id:id}})
-    r.status='REJECTED'
+    r.status='DISCARDED'
     r.save()
     res.json(`request id ${id} has been set with status REJECTED`)
 })
@@ -118,8 +118,7 @@ router.put("/commit",async(req,res)=>{
         
         let requests=await db.request.findAll({where:{[Op.or]:[{'status':'ACCEPTED_INFN'},{'status':'ACCEPTED_USAP'}]},transaction:t})
         
-        if(!requests.length) {throw new Error("Nothing to finalize")}
-      
+        
         requests.forEach(async (r) => {
             let school={
                 "year":r.year,
@@ -158,14 +157,13 @@ router.put("/commit",async(req,res)=>{
         });
 
        
-
+        //commit di tutto
         await db.request.update({status:db.sequelize.literal("status || '_COMMIT'") },{
             where:{ [Op.or]:[ {'status':"ACCEPTED_INFN"},{'status':"ACCEPTED_USAP"},{'status':"REJECTED"}] },
             transaction: t 
         })
 
         await t.commit();
-
     }
     catch(exc){
         console.log(exc.message)
@@ -173,26 +171,70 @@ router.put("/commit",async(req,res)=>{
         await t.rollback();
     }
 
-    if(!error){
-        sendConfirmSchool()
-    }
+    //manda notifiche
+    sendConfirmSchoolNotification()
+    sendRejectSchoolNotification()
 
     res.json({"done":!error,"exc":error})
 })
 
+const sendRejectSchoolNotification=async ()=>{
 
-const sendConfirmSchool=async ()=>{
+    const {readTemplate,replaceInTemplate}=require("../api/utils")
+
+    //solo le richieste che vanno notificate es: Robotica fa da se
+    const requests=await db.request.findAll({where:{sendNotific:1,status:'REJECTED_COMMIT'}})
+    if(requests.length===0) return
+    const fileTemplate="msg_rifiuto"
+    let subject=`PCTO Lab2Go - non ammissione al progetto`
+    let from=replyTo=global.mail.LAB2GO_MAIL
+   
+    
+    requests.forEach(async req=>{
+        let sd=JSON.parse(req.school_json_data)
+        let ud=JSON.parse(req.user_json_data)
+        
+        let data={
+            "SCHOOL_NAME":sd.sc_tab_plesso,"SCHOOL_MEC_CODE":sd.sc_tab_plesso_code,
+            }
+
+        //legge template
+        let tpl=readTemplate(`${fileTemplate}.txt`.toLowerCase())
+        let mailBody=replaceInTemplate(tpl,data)
+
+        let to=[sd.sc_tab_email,ud.email,...ud.emailAlt]
+        
+        let environment=process.env.NODE_ENV.trim()
+
+        if(environment=='PROD')
+        {
+            await sendMail(from,to,subject,mailBody,replyTo,null,null)
+        }
+        else{
+            
+            await sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,subject,mailBody,global.mail.DEV_MAIL,"")
+        }
+
+        req.status+="_NOTIFIED"
+        await req.save()
+
+    })
+}
+
+const sendConfirmSchoolNotification=async ()=>{
     
     const global = require("../api/global")
     const {readTemplate,replaceInTemplate}=require("../api/utils")
 
+    //solo le richieste che vanno notificate es: Robotica fa da se
+    let requests=await db.request.findAll({where:{sendNotific:1,[Op.or]:[{'status':"ACCEPTED_INFN_COMMIT"},{'status':"ACCEPTED_USAP_COMMIT"}]}})
+    if(requests.length===0) return
     let year=new Date().getFullYear()
-    let schools=await db.school.findAll({where:{year:year},raw:true})
-    let requests=await db.request.findAll({where:{year:year},raw:true})
+    let schools=await db.school.findAll({where:{year:year,plesso_mec_code:{[Op.in]:requests.map(r=>r.plesso_mec_code)}},raw:true})
+    
     let assignments=await db.assignment.findAll({where:{year:year},raw:true})
     let tutors=await db.tutor.findAll({raw:true})
     let referents=await db.referent.findAll({raw:true})
-
 
     let fileTemplateMap={
         "Robotica":{"contact":'attivo',"tutor":"notutor","file":"msg_attivo_notutor"},
@@ -234,7 +276,7 @@ const sendConfirmSchool=async ()=>{
         if(!referent){ referent=refersByDisci }
 
               
-        return {school,tutor,referent,fileTemplate}
+        return {request,school,tutor,referent,fileTemplate}
 
         
     }
@@ -244,7 +286,7 @@ const sendConfirmSchool=async ()=>{
     assignments.forEach(async assignment=>
         {   
             
-            let {school,tutor,referent,fileTemplate} = await prepareData(assignment)
+            let {request,school,tutor,referent,fileTemplate} = await prepareData(assignment)
 
             let sd=JSON.parse(school.school_json_data) //dati scuola
             let ud=JSON.parse(school.user_json_data)   //dati richiedente
@@ -264,8 +306,6 @@ const sendConfirmSchool=async ()=>{
                     "TUTOR_NAME": tutor?.name,"TUTOR_EMAIL":`(${tutor?.email})`,
                     "LINK_CONFIRM":`<a href="${lnk_confirm}">Conferma</a>`
                     }
-            
-                    
             
             
             let mailBody=replaceInTemplate(tpl,data)
@@ -287,13 +327,12 @@ const sendConfirmSchool=async ()=>{
                 await sendMail(from,to,subject,mailBody,replyTo,null,cc)
             }
             else{
-                console.log("SchoolID:",school.id)
-                console.log("From:",from)
-                console.log("To:",to)
-                console.log("Cc:",cc)
-
+               
                 await sendMail(global.mail.NO_REPLY,global.mail.DEV_MAIL,subject,mailBody,global.mail.DEV_MAIL,"")
             }
+
+            request.status+="_NOTIFIED"
+            request.save()
 
         })
         
@@ -302,10 +341,10 @@ const sendConfirmSchool=async ()=>{
 
 router.get("/sendConfirmSchool",async (req,res)=>{
     try{
-        await sendConfirmSchool()
+        await sendConfirmSchoolNotification()
     }
     catch(exc){
-        console.log("SendAskConfirm:",exc)
+        console.log("sendConfirmSchoolNotification:",exc)
     }
     res.json("done")
 })
@@ -332,8 +371,8 @@ router.post("/list",auth.checkAuth,async (req,res)=>{
    
     let {filter}=req.body
     let {email,role}=req.user
-    let where={"status":{ [Op.notLike]:'%COMMIT' }}
-   
+    //let where={"status":{ [Op.notLike]:'%COMMIT' }}
+    let where={}
 
     if(role!='ADMIN' && role!='COORDINATORE'){
         where={"userEmail":email}

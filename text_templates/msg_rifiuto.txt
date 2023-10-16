@@ -1,0 +1,17 @@
+<pre>
+All’attenzione del D.S.
+dei responsabili PCTO
+del docente richiedente
+
+Con la presente Vi informiamo che a causa dell’elevato numero di richieste ricevute, 
+non possiamo soddisfare la richiesta della Vostra scuola [SCHOOL_NAME] ([SCHOOL_MEC_CODE]) 
+riguardo alla partecipazione al percorso PCTO Lab2Go per l’Anno Scolastico 2023-2024.
+
+Confidiamo, per il prossimo Anno Scolastico, di riuscire ad ampliare l’offerta formativa. 
+Ringraziandovi per l’interesse dimostrato nei confronti del nostro progetto, 
+rinnoviamo, pertanto, l’invito a presentare domanda di partecipazione per il prossimo Anno Scolastico.
+
+Cordialmente,
+
+il Comitato di Coordinamento di Lab2Go
+</pre>
