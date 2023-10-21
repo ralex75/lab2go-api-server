@@ -247,12 +247,8 @@ const sendConfirmSchoolNotification=async ()=>{
     }
 
 
-    const prepareData=async (assignment)=>{
-        
-
-        //richiesta
-        let request=requests.filter(r=>r.id==assignment.requestId)[0]
-
+    const prepareData=async (request,assignment)=>{
+       
         //recupera il referente filtrando per disciplina e per lo stato della richiesta
         let refersByDisci=referents.filter(r=> (r.disciplina.toLowerCase()==assignment.disciplina.toLowerCase()))
 
@@ -285,8 +281,13 @@ const sendConfirmSchoolNotification=async ()=>{
     
     assignments.forEach(async assignment=>
         {   
+            //le richieste sono tutte quelle che non sono ancora state notificate
+            //le assegnazioni invece sono tutte
+            let request=requests.filter(r=>r.id==assignment.requestId)[0]
             
-            let {request,school,tutor,referent,fileTemplate} = await prepareData(assignment)
+            if(!request) return //equivale a continue
+
+            let {school,tutor,referent,fileTemplate} = await prepareData(request,assignment)
 
             let sd=JSON.parse(school.school_json_data) //dati scuola
             let ud=JSON.parse(school.user_json_data)   //dati richiedente
