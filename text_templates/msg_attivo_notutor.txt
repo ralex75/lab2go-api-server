@@ -1,18 +1,28 @@
 <PRE>
 
-Con la presente informiamo che la Vostra scuola [SCHOOL_NAME] è stata ammessa al percorso PCTO Lab2Go (https://web.infn.it/lab2go/) per l'Anno Scolastico 2023-2024.
+Con la presente informiamo che la Vostra scuola [SCHOOL_NAME] 
+è stata ammessa al percorso PCTO Lab2Go (https://web.infn.it/lab2go/) 
+per l'Anno Scolastico 2023-2024.
 
-Alla Vostra scuola è stata assegnata la disciplina [SCHOOL_DISCI], il cui referente è
+Alla Vostra scuola è stata assegnata la disciplina [SCHOOL_DISCI], 
+il cui referente è
 [LISTA_REF_WITH_MAIL]
 
-IMPORTANTE: Vi chiediamo di confermare, entro e non oltre una settimana dalla ricezione della presente, il vostro interesse a partecipare selezionando il seguente link [LINK_CONFIRM] oppure tramite il sito di gestione delle richieste (https://l.infn.it/l2gadmin), alla voce "Scuole" usando le credenziali di accesso che avete ricevuto all'atto dell'accettazione della richiesta.
+IMPORTANTE: Vi chiediamo di confermare, entro e non oltre una settimana
+dalla ricezione della presente, il vostro interesse a partecipare 
+selezionando il seguente link [LINK_CONFIRM] oppure tramite il sito di 
+gestione delle richieste (https://l.infn.it/l2gadmin), alla voce 
+"Scuole" usando le credenziali di accesso che avete ricevuto all'atto 
+dell'accettazione della richiesta.
 
-A seguito della conferma, sarete contattati al più presto dal referente di disciplina per ulteriori informazioni e comunicazioni operative sulle modalità di svolgimento del progetto.
+A seguito della conferma, sarete contattati al più presto dal referente 
+di disciplina per ulteriori informazioni e comunicazioni operative sulle 
+modalità di svolgimento del progetto.
 
-Per informazioni e chiarimenti di ordine generale sul progetto, potete contattare i coordinatori nazionali Lab2go, elencati qui di seguito:
+Per informazioni e chiarimenti di ordine generale sul progetto, potete
+contattare i coordinatori nazionali Lab2go, elencati qui di seguito:
 
 Dott.ssa Giulia De Bonis (INFN) - giulia.debonis@roma1.infn.it
-
 Prof. Massimo Reverberi (Sapienza) - massimo.reverberi@uniroma1.it
 
 Cordialmente, per il Comitato di Coordinamento di LAB2GO,
