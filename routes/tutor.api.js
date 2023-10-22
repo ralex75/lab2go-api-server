@@ -20,6 +20,7 @@ router.post("/",async (req,res)=>{
 router.put("/:id",async (req,res)=>{
     let nt=req.body.tutor
     let tutor=await db.tutor.findByPk(req.params.id)
+    
     tutor.name=nt.name
     tutor.email=nt.email
     tutor.save()
@@ -28,10 +29,11 @@ router.put("/:id",async (req,res)=>{
 
 //i tutor non vengono eliminati ma semplicemente disabilitati
 router.delete("/:id",async (req,res)=>{
-    let tutor=db.tutor.findByPk(id,{raw:true})
-    if(tutor.email=='noreply@infn.it') return res.json("Questo tutor non può essere eliminato")
+    let tutor=await db.tutor.findByPk(req.params.id)
+    if(!tutor.allow_delete) return res.status(500).json({"msg":"Questo tutor non può essere eliminato"})
     tutor.status="DISABLED"
-    res.json("tutor deleted")
+    tutor.save()
+    res.json(`tutor deleted`)
 })
 
 router.get("/load",async(req,res)=>{
