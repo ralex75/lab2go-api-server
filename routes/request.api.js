@@ -6,6 +6,7 @@ const global=require("../api/global")
 const auth=require("../api/auth")
 const settings=require("../api/settings");
 const { replaceInTemplate } = require("../api/utils");
+const crypto = require("crypto")
 
 const router=Router()
 
@@ -52,7 +53,7 @@ router.get("/confirm",async (req,res)=>{
 //@creazione di una nuova richiesta
 //auth.allowRequestSchoolUntilAt => middleware per il controllo se il limite di tempo per la richiesta è stato raggiunto
 router.post("/create", settings.allowRequestSchoolUntilAt, async (req,res)=>{
-    const crypto = require("crypto")
+    
         
     let {school,user}=req.body
    
@@ -127,7 +128,7 @@ router.put("/commit",async(req,res)=>{
                 "user_json_data":r.user_json_data,
                 "school_json_data":r.school_json_data,
                 "discipline":r.disci_accepted,
-                "token":r.token,
+                "token":crypto.randomBytes(64).toString('hex'),
                 "userEmail":r.userEmail,
                 "requestId":r.id
             }
@@ -363,7 +364,7 @@ router.put("/:rid/update",async (req,res)=>{
     curreq.user_json_data = JSON.stringify(usr_data)
     curreq.disci_accepted = JSON.stringify(disci_accepted)
     curreq.status=status
-    curreq.save()
+    await curreq.save()
 
     res.json(curreq)
 })
