@@ -297,6 +297,9 @@ const sendConfirmSchoolNotification=async ()=>{
            
             let lnk_confirm=`${global.LAB2GO_URL.ADMIN[environment]}/api/schools/confirm?code=${school.plesso_mec_code}&year=${year}&email=${school.userEmail}`
            
+            //rimuove doppi backslash
+            lnk_confirm=lnk_confirm.replace(/([^:]\/)\/+/g, "$1")
+            
             //legge template
             let tpl=readTemplate(`${fileTemplate}.txt`.toLowerCase())
             

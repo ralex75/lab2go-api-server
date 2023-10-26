@@ -46,6 +46,21 @@ const configureAPI=(app)=>{
     app.use(fileUpload({ createParentPath: true }));
     app.use(cookieParser())
 
+    //TRICK per cazzata nella formattazione URL. Formattazione che è stata corretta
+    //ma per le mail già mandate questo handler serve.
+    app.get("//api/schools/confirm",(req,res,next)=>{
+      try{
+        let url=req.url.replace(/(?<!:)\/+/gm, '/');
+        url=req.protocol + '://' + req.get('host')+url
+        console.log(url)
+        res.redirect(url)
+      }
+      catch(exc)
+      {
+        console.log(exc)
+      }
+    })
+
     app.get("/api/policy",(req,res,next)=>{
       const path=require("path")
       res.sendFile("privacy_policy_info.pdf",{root:path.join(__dirname,'/public')},(err)=>{

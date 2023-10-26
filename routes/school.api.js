@@ -139,7 +139,7 @@ router.put("/:id",
     
     sc.school_json_data=JSON.stringify(school)
     sc.discipline=JSON.stringify(tutor)
-    sc.save()
+    await sc.save()
 
     
     assignments.forEach(async a=>{
@@ -173,7 +173,7 @@ router.post("/add",[
     
 
     let result={}
-    try{ result['value']=await db.schools.create({name,address,section}) }
+    try{ result['value']=await db.school.create({name,address,section}) }
     catch(exc) { result['exc']= exc?.errors[0].message || exc }
     finally { res.status(result['exc'] ? 500 : 200).json(result) }
   
