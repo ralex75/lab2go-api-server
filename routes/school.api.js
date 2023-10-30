@@ -45,6 +45,7 @@ router.get("/confirm",async (req,res)=>{
     let schools=[]
     if(!tk)
     {
+        if(!code || !year || !email) return res.send("Spiacenti, si sono verificati problemi tecnici: contattare <a mailt:to='info.lab2go@gmail.com'>info.lab2go@gmail.com</a>")
         schools=await db.school.findAll({where:{"plesso_mec_code":code,"year":year,"userEmail":email}})
     }
     else{
@@ -53,10 +54,14 @@ router.get("/confirm",async (req,res)=>{
 
     if(schools.length==0) return res.sendStatus(403)
 
-    schools.forEach(async s=>{
-        let createdAt=s.createdAt
+    //si ripristina + in la
+    const checkConfirmDate=({createdAt})=>{
         let dayElapsed=moment().diff(moment(createdAt),'days')+1
-        if(dayElapsed>7) return res.status(500).send("Lab2GO: Spiacenti il link di conferma è scaduto.")
+        return dayElapsed<=7 
+    }
+
+    schools.forEach(async s=>{
+        //if(!checkConfirmDate(s)) return res.status(500).send("Lab2GO: Spiacenti il link di conferma è scaduto.")
         s.status="CONFIRMED"
         await s.save()
     })
