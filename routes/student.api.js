@@ -41,10 +41,21 @@ router.post("/store",[
 
         if(!school) throw new Error("no school found")
         let discipline=JSON.parse(school.discipline)
-        if(discipline.indexOf(disciplina)<0) throw new Error("disciplina not found")
 
-        let student=await db.student.create({name,surname,email,disciplina,schoolId})
-       
+        //check disciplina
+        if(Object.keys(discipline).indexOf(disciplina)<0)
+            throw new Error("disciplina not found")
+
+        let student = await db.student.findOne({where:{"email":email,"schoolId":schoolId}})
+        
+        if(!student)
+        {
+            student=await db.student.create({name,surname,email,disciplina,schoolId})
+        }
+
+        student.attivo=1
+        await student.save()
+
         result['value']=student
     }
     catch(exc) { 

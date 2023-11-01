@@ -26,9 +26,9 @@ router.post("/",auth.checkAuth, async (req,res)=>{
 //anni di partecipazione di una scuola
 router.get("/:schoolId/years",async(req,res)=>{
     let {plesso_mec_code}=await db.school.findOne({where:{id:req.params.schoolId},attributes:['plesso_mec_code'],raw:true})
-    let years=await db.school.findAll({order: [
-        ["year", "DESC"],
-      ], attributes:['year','id'],where:{"plesso_mec_code":plesso_mec_code},raw:true})
+    
+    let years=db.school.findAll({where:{plesso_mec_code:plesso_mec_code},attributes:['year'], order:[['year','DESC']],raw:true})
+    
     res.json({years}) 
 })
 
