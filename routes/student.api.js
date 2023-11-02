@@ -103,8 +103,9 @@ router.post('/upload',async (req,res)=>{
         let newUsers=[]
         for(let d of data.split("\n"))
         {
+            if(!d) continue;
             let student=d.split(',')
-            if(student.length!=3) {throw new Error("Invalid File Entry")}
+            if(student.length!=3) {throw new Error("Invalid File Entry:"+d)}
             newUsers.push({
                 name:student[0],
                 surname:student[1],
