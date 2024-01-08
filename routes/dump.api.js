@@ -57,14 +57,8 @@ router.get("/students",auth.checkAuth, async(req,res)=>{
         students=students.filter(s=>moment(s.createdAt)>=moment(sdate))
         
         students.forEach(student => {
-          
-            let stud={}
-            stud["account.wiki"]=`${student.name.split(' ').join("").toLowerCase()}.${student.surname.split(' ').join("").toLowerCase()}`
-            stud["nome_completo"]=`${student.name} ${student.surname}`
-            stud["email"]=`${student.email}`
-            stud["privilegi"]=`user,${disciplina_wiki_map[student.disciplina.toLowerCase()]},${s.school_mec_code}`
-            let line=`${stud["account.wiki"]},"${stud["nome_completo"]}","${stud["email"]}","${stud["privilegi"]}"\n`
-            fs.appendFileSync(FILE_NAME, line);
+
+            fs.appendFileSync(FILE_NAME, mapStudentDataAlt(student));
 
         });
     })
@@ -74,5 +68,28 @@ router.get("/students",auth.checkAuth, async(req,res)=>{
 
 
 })
+
+const mapStudentData=(student)=>{
+
+    let stud={}
+    stud["account.wiki"]=`${student.name.split(' ').join("").toLowerCase()}.${student.surname.split(' ').join("").toLowerCase()}`
+    stud["nome_completo"]=`${student.name} ${student.surname}`
+    stud["email"]=`${student.email}`
+    stud["privilegi"]=`user,${disciplina_wiki_map[student.disciplina.toLowerCase()]},${s.school_mec_code}`
+    return `${stud["account.wiki"]},"${stud["nome_completo"]}","${stud["email"]}","${stud["privilegi"]}"\n`
+  
+}
+
+//chiesto da Franz: 08012024
+const mapStudentDataAlt=(student)=>{
+
+    let stud={}
+    stud["nome"]=student.name.split(' ').join("").toLowerCase()
+    stud["cognome"]=student.surname.split(' ').join("").toLowerCase()
+    stud["disciplina"]=disciplina_wiki_map[student.disciplina.toLowerCase()]
+    stud["mec_code"]=s.school_mec_code
+    return `${Object.values(stud).join(",")}\n`
+  
+}
 
 module.exports=router

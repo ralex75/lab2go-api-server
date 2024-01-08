@@ -11,7 +11,7 @@ router.post("/",auth.checkAuth, async (req,res)=>{
     
     let {keyword,year}=req.body
     let {email,role}=req.user
-    year=year || new Date().getFullYear()
+    year=year || '2023'
     let where={"year":year}
    
     if(role!='ADMIN' && role!='COORDINATORE'){
@@ -29,7 +29,8 @@ router.get("/:schoolId/years",async(req,res)=>{
     
     let years=db.school.findAll({where:{plesso_mec_code:plesso_mec_code},attributes:['year'], order:[['year','DESC']],raw:true})
     
-    res.json({years}) 
+    res.json({years})  
+
 })
 
 //studenti della scuola
