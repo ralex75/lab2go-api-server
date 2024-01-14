@@ -5,6 +5,16 @@ const auth=require("../api/auth")
 
 const router=Router()
 
+const disciplina_wiki_map={
+    "fisica":"fisica",
+    "chimica":"chimica",
+    "biologia animale":"biologia",
+    "biologia vegetale":"botanica",
+    "musei scientifici":"museiscientifici",
+    "scienze della terra":"scienzedellaterra",
+    "robotica":"robotica"
+}
+
 router.get('/db', auth.checkAuth, (req,res)=>{
       
     const {user}=req
@@ -33,15 +43,7 @@ router.get("/students",auth.checkAuth, async(req,res)=>{
    
     const FILE_NAME='studenti.csv'
 
-    let disciplina_wiki_map={
-        "fisica":"fisica",
-        "chimica":"chimica",
-        "biologia animale":"biologia",
-        "biologia vegetale":"botanica",
-        "musei scientifici":"museiscientifici",
-        "scienze della terra":"scienzedellaterra",
-        "robotica":"robotica"
-    }
+    
 
     const fs = require('fs');
 
@@ -54,11 +56,12 @@ router.get("/students",auth.checkAuth, async(req,res)=>{
         if(status!='ALL'){
             students=students.filter(s=>s.attivo==status)
         }
+        console.log(sdate)
         students=students.filter(s=>moment(s.createdAt)>=moment(sdate))
         
         students.forEach(student => {
 
-            fs.appendFileSync(FILE_NAME, mapStudentDataAlt(student));
+            fs.appendFileSync(FILE_NAME, mapStudentDataAlt(student,s.school_mec_code));
 
         });
     })
@@ -69,25 +72,26 @@ router.get("/students",auth.checkAuth, async(req,res)=>{
 
 })
 
-const mapStudentData=(student)=>{
+//vecchio map
+const mapStudentData=(student,mec_code)=>{
 
     let stud={}
     stud["account.wiki"]=`${student.name.split(' ').join("").toLowerCase()}.${student.surname.split(' ').join("").toLowerCase()}`
     stud["nome_completo"]=`${student.name} ${student.surname}`
     stud["email"]=`${student.email}`
-    stud["privilegi"]=`user,${disciplina_wiki_map[student.disciplina.toLowerCase()]},${s.school_mec_code}`
+    stud["privilegi"]=`user,${disciplina_wiki_map[student.disciplina.toLowerCase()]},${mec_code}`
     return `${stud["account.wiki"]},"${stud["nome_completo"]}","${stud["email"]}","${stud["privilegi"]}"\n`
-  
+   
 }
 
 //chiesto da Franz: 08012024
-const mapStudentDataAlt=(student)=>{
+const mapStudentDataAlt=(student,mec_code)=>{
 
     let stud={}
     stud["nome"]=student.name.split(' ').join("").toLowerCase()
     stud["cognome"]=student.surname.split(' ').join("").toLowerCase()
     stud["disciplina"]=disciplina_wiki_map[student.disciplina.toLowerCase()]
-    stud["mec_code"]=s.school_mec_code
+    stud["mec_code"]=mec_code
     return `${Object.values(stud).join(",")}\n`
   
 }
